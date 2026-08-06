@@ -94,12 +94,12 @@ export default function Index({ reports, filters }) {
                             />
                         </form>
 
-                        {/* Status Filter Pills (Mobile Scrollable) */}
+                                    {/* Status Filter Pills (Mobile Scrollable) */}
                         <div className="flex items-center gap-2 overflow-x-auto pb-1 shrink-0 scrollbar-none">
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('')}
-                                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                                     statusFilter === '' 
                                         ? 'bg-slate-900 text-white shadow-2xs' 
                                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -110,7 +110,7 @@ export default function Index({ reports, filters }) {
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('open')}
-                                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
                                     statusFilter === 'open' 
                                         ? 'bg-amber-500 text-white shadow-2xs' 
                                         : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200/60'
@@ -121,7 +121,7 @@ export default function Index({ reports, filters }) {
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('in_progress')}
-                                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
                                     statusFilter === 'in_progress' 
                                         ? 'bg-blue-600 text-white shadow-2xs' 
                                         : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/60'
@@ -132,7 +132,7 @@ export default function Index({ reports, filters }) {
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('resolved')}
-                                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
                                     statusFilter === 'resolved' 
                                         ? 'bg-emerald-600 text-white shadow-2xs' 
                                         : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/60'
@@ -153,7 +153,7 @@ export default function Index({ reports, filters }) {
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     placeholder="Cari pelapor, kelas, atau aset..."
-                                    className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)] focus:border-[hsl(var(--primary))]"
+                                    className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)] focus:border-[hsl(var(--primary))]"
                                 />
                             </form>
 
@@ -161,7 +161,7 @@ export default function Index({ reports, filters }) {
                                 <button
                                     type="button"
                                     onClick={() => handleFilterStatus('')}
-                                    className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                                    className={`px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                                         statusFilter === '' 
                                             ? 'bg-slate-900 text-white shadow-xs' 
                                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -172,7 +172,7 @@ export default function Index({ reports, filters }) {
                                 <button
                                     type="button"
                                     onClick={() => handleFilterStatus('open')}
-                                    className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                                    className={`px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
                                         statusFilter === 'open' 
                                             ? 'bg-amber-500 text-white shadow-xs' 
                                             : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200/60'
@@ -183,7 +183,7 @@ export default function Index({ reports, filters }) {
                                 <button
                                     type="button"
                                     onClick={() => handleFilterStatus('in_progress')}
-                                    className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                                    className={`px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
                                         statusFilter === 'in_progress' 
                                             ? 'bg-blue-600 text-white shadow-xs' 
                                             : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/60'
@@ -194,7 +194,7 @@ export default function Index({ reports, filters }) {
                                 <button
                                     type="button"
                                     onClick={() => handleFilterStatus('resolved')}
-                                    className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                                    className={`px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
                                         statusFilter === 'resolved' 
                                             ? 'bg-emerald-600 text-white shadow-xs' 
                                             : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/60'
@@ -345,7 +345,7 @@ export default function Index({ reports, filters }) {
 
                                     {/* Card Content */}
                                     <div className="p-3.5 space-y-2.5">
-                                        <div className="flex items-start justify-between gap-2 bg-slate-50/60 p-2.5 rounded-xl border border-slate-100">
+                                        <div className="flex items-start justify-between gap-2 bg-slate-50/60 p-2.5 rounded-lg border border-slate-100">
                                             <div className="min-w-0">
                                                 <p className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Aset Terkait</p>
                                                 {report.asset ? (
@@ -365,7 +365,7 @@ export default function Index({ reports, filters }) {
 
                                         <div className="space-y-1">
                                             <p className="text-[10px] font-bold uppercase text-red-600 tracking-wider">Deskripsi Kendala</p>
-                                            <p className="text-xs text-slate-700 leading-relaxed font-medium bg-red-50/50 p-2.5 rounded-xl border border-red-100">
+                                            <p className="text-xs text-slate-700 leading-relaxed font-medium bg-red-50/50 p-2.5 rounded-lg border border-red-100">
                                                 {report.deskripsi_kendala}
                                             </p>
                                         </div>
@@ -375,27 +375,27 @@ export default function Index({ reports, filters }) {
                                     <div className="p-2.5 bg-slate-50/80 border-t border-slate-100 flex items-center gap-2">
                                         <button
                                             onClick={() => setDetailReport(report)}
-                                            className="flex-1 py-1.5 px-3 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-colors shadow-2xs"
+                                            className="flex-1 py-1.5 px-3 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-colors shadow-2xs"
                                         >
                                             <Eye size={14} /> Detail
                                         </button>
                                         <button
                                             onClick={() => openEditModal(report)}
-                                            className="flex-1 py-1.5 px-3 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-colors shadow-2xs cursor-pointer"
+                                            className="flex-1 py-1.5 px-3 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-colors shadow-2xs cursor-pointer"
                                         >
                                             <Wrench size={14} /> Tindak Lanjuti
                                         </button>
                                         {auth.user?.is_admin && (
                                             <button
                                                 onClick={() => handleDelete(report.id)}
-                                                className="p-1.5 text-red-600 bg-white border border-red-200 hover:bg-red-50 rounded-xl transition-colors shrink-0 cursor-pointer shadow-2xs"
+                                                className="p-1.5 text-red-600 bg-white border border-red-200 hover:bg-red-50 rounded-lg transition-colors shrink-0 cursor-pointer shadow-2xs"
                                             >
                                                 <Trash2 size={14} />
                                             </button>
                                         )}
                                     </div>
                                 </div>
-                            ))
+                            ))))
                         ) : (
                             <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400">
                                 <AlertTriangle size={32} className="mx-auto mb-2 opacity-50 text-slate-400" />
