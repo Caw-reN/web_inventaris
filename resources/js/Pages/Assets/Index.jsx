@@ -298,63 +298,62 @@ export default function Index({ assets, categories, locations, filters }) {
 
                                             {/* Sub-Group Base Names (Shrank when category is collapsed) */}
                                             {!isCategoryCollapsed && (
-                                                <div className="px-1 space-y-3">
+                                                <div className="space-y-2.5 pl-1">
                                                     {Object.entries(baseGroups).map(([baseName, items]) => {
                                                         const groupKey = `${category}-${baseName}`;
                                                         const isExpanded = expandedMobileGroups.has(groupKey);
                                                         
                                                         return (
-                                                        <div key={baseName} className={`relative before:content-[''] before:absolute before:left-0 before:top-6 before:bottom-0 before:w-0.5 before:bg-[hsl(var(--primary)/0.2)] pl-3 ${isExpanded ? 'pb-3' : ''}`}>
-                                                            {/* Base Name Header (Clickable) */}
+                                                        <div key={baseName} className="bg-slate-50/80 border border-slate-200/80 rounded-xl overflow-hidden shadow-2xs">
+                                                            {/* Base Name Header (Clickable Accordion Card) */}
                                                             <div 
                                                                 onClick={() => toggleMobileGroup(groupKey)}
-                                                                className="flex items-center justify-between py-2 cursor-pointer select-none"
+                                                                className="flex items-center justify-between p-3 cursor-pointer hover:bg-slate-100 transition-colors select-none"
                                                             >
                                                                 <div className="flex items-center gap-2">
-                                                                    <div className="absolute left-[-3px] top-[14px] w-2 h-2 rounded-full bg-[hsl(var(--primary))]"></div>
                                                                     {isExpanded ? (
-                                                                        <ChevronDown size={16} className="text-slate-500" />
+                                                                        <ChevronDown size={16} className="text-slate-600 shrink-0" />
                                                                     ) : (
-                                                                        <ChevronRight size={16} className="text-slate-400" />
+                                                                        <ChevronRight size={16} className="text-slate-400 shrink-0" />
                                                                     )}
-                                                                    <span className="font-semibold text-slate-700 text-sm">{baseName}</span>
-                                                                    <span className="bg-[hsl(var(--primary))] text-white text-[10px] px-2 py-0.5 rounded-full font-semibold">
+                                                                    <span className="font-bold text-slate-800 text-xs sm:text-sm">{baseName}</span>
+                                                                    <span className="bg-slate-200 text-slate-700 text-[10px] px-2 py-0.5 rounded-full font-bold">
                                                                         {items.length} Item
                                                                     </span>
                                                                 </div>
                                                                 <button 
                                                                     onClick={(e) => { e.stopPropagation(); handlePrintGroup(items); }}
-                                                                    className="flex items-center gap-1 p-1 px-2 text-slate-600 bg-white border border-slate-200 rounded text-[10px] font-semibold hover:bg-slate-50 transition-colors shadow-sm"
+                                                                    className="flex items-center gap-1 px-2.5 py-1 text-slate-700 bg-white border border-slate-200/80 rounded-lg text-[10px] font-bold hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer shrink-0"
                                                                     title={`Print QR Code untuk semua ${baseName}`}
                                                                 >
-                                                                    <Printer size={12} /> Print QR
+                                                                    <Printer size={12} className="text-slate-500" /> Print QR
                                                                 </button>
                                                             </div>
                                                             
-                                                            {/* Asset Cards (Collapsible) */}
+                                                            {/* Asset Cards (Collapsible inside Sub-Group) */}
                                                             {isExpanded && (
-                                                                <div className="space-y-3 mt-2">
+                                                                <div className="p-2 space-y-2.5 bg-white border-t border-slate-200/80">
                                                                     {items.map(item => (
-                                                                    <div key={item.id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col relative ml-1">
+                                                                    <div key={item.id} className="bg-slate-50/50 rounded-xl border border-slate-200/80 shadow-2xs overflow-hidden flex flex-col">
                                                                         {/* Card Header */}
-                                                                        <div className="p-4 border-b border-slate-100 flex flex-col gap-3">
+                                                                        <div className="p-3.5 border-b border-slate-100 flex flex-col gap-2.5">
                                                                             <div className="flex justify-between items-start gap-2">
                                                                                 <div>
-                                                                                    <h3 className="font-semibold text-slate-900 leading-tight mb-1">{item.nama}</h3>
-                                                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] tracking-wider border border-[hsl(var(--primary)/0.2)]">
+                                                                                    <h3 className="font-bold text-slate-900 text-xs sm:text-sm leading-tight mb-1">{item.nama}</h3>
+                                                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[hsl(var(--primary)/0.08)] text-[hsl(var(--primary))] tracking-wider border border-[hsl(var(--primary)/0.2)]">
                                                                                         {item.nomor_inventaris || 'BELUM ADA NO. INV'}
                                                                                     </span>
                                                                                 </div>
-                                                                                <div className="shrink-0 flex flex-col items-end gap-1.5">
+                                                                                <div className="shrink-0 flex flex-col items-end gap-1">
                                                                                     <StatusBadge status={item.status} label={item.status_label} />
-                                                                                    <button onClick={() => setQrModal({ isOpen: true, asset: item })} className="p-1.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg transition-colors shadow-sm mt-1 flex items-center gap-1">
-                                                                                        <QrCode size={14} /> <span className="text-[10px] font-semibold uppercase">QR</span>
+                                                                                    <button onClick={() => setQrModal({ isOpen: true, asset: item })} className="p-1 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors shadow-2xs mt-1 flex items-center gap-1 text-[10px] font-semibold px-2">
+                                                                                        <QrCode size={13} /> QR
                                                                                     </button>
                                                                                 </div>
                                                                             </div>
                                                                             
                                                                             {/* Details Grid */}
-                                                                            <div className="grid grid-cols-2 gap-y-2 gap-x-4 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                                                                            <div className="grid grid-cols-2 gap-2 bg-white p-2.5 rounded-lg border border-slate-200/60 text-xs">
                                                                                 <div>
                                                                                     <div className="text-[9px] text-slate-400 uppercase font-semibold">Lokasi</div>
                                                                                     <div className="text-xs text-slate-700 font-medium truncate">{item.location?.nama || '-'}</div>
@@ -371,15 +370,15 @@ export default function Index({ assets, categories, locations, filters }) {
                                                                         </div>
                                                                         
                                                                         {/* Card Actions */}
-                                                                        <div className="p-3 flex items-center gap-2">
-                                                                            <Link href={route('assets.show', item.id)} className="flex-1 flex justify-center items-center gap-1.5 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg text-sm font-medium transition-colors">
-                                                                                <Eye size={16} /> Detail
+                                                                        <div className="p-2.5 bg-slate-50/80 flex items-center gap-2">
+                                                                            <Link href={route('assets.show', item.id)} className="flex-1 flex justify-center items-center gap-1 py-1.5 text-blue-600 bg-white border border-blue-200/80 hover:bg-blue-50 rounded-lg text-xs font-semibold transition-colors shadow-2xs">
+                                                                                <Eye size={14} /> Detail
                                                                             </Link>
-                                                                            <Link href={route('assets.edit', item.id)} className="flex-1 flex justify-center items-center gap-1.5 py-2 text-amber-600 bg-amber-50 hover:bg-amber-100 rounded-lg text-sm font-medium transition-colors">
-                                                                                <Edit size={16} /> Edit
+                                                                            <Link href={route('assets.edit', item.id)} className="flex-1 flex justify-center items-center gap-1 py-1.5 text-amber-600 bg-white border border-amber-200/80 hover:bg-amber-50 rounded-lg text-xs font-semibold transition-colors shadow-2xs">
+                                                                                <Edit size={14} /> Edit
                                                                             </Link>
-                                                                            <button onClick={() => setDeleteModal({ isOpen: true, asset: item })} className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors shrink-0">
-                                                                                <Trash2 size={16} />
+                                                                            <button onClick={() => setDeleteModal({ isOpen: true, asset: item })} className="p-1.5 text-red-600 bg-white border border-red-200/80 hover:bg-red-50 rounded-lg transition-colors shrink-0 shadow-2xs cursor-pointer">
+                                                                                <Trash2 size={14} />
                                                                             </button>
                                                                         </div>
                                                                     </div>
