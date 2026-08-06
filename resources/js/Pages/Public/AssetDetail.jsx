@@ -1,13 +1,14 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import StatusBadge from '@/Components/StatusBadge';
-import { Tag, MapPin, AlertTriangle, Send, Info, ShieldAlert, Cpu, Barcode, Calendar, UserCheck, Wrench, ShieldCheck } from 'lucide-react';
+import { Tag, MapPin, AlertTriangle, Send, Info, ShieldAlert, Cpu, Barcode, Calendar, UserCheck, Wrench, ShieldCheck, Camera, Image as ImageIcon, Maximize2, X } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AssetDetail({ asset }) {
     const { flash } = usePage().props;
     const [showForm, setShowForm] = useState(false);
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
         nama_pelapor: '',
@@ -101,12 +102,39 @@ export default function AssetDetail({ asset }) {
                 </div>
             )}
 
-            {/* Foto Aset (Jika Ada) */}
-            {asset.foto && (
-                <div className="mb-5 rounded-2xl overflow-hidden border border-slate-200 shadow-md max-h-56 bg-slate-100">
-                    <img src={asset.foto} alt={asset.nama} className="w-full h-56 object-cover hover:scale-105 transition-transform duration-300" />
-                </div>
-            )}
+            {/* Frame Foto Fisik Aset */}
+            <div className="mb-5">
+                {asset.foto ? (
+                    <div 
+                        onClick={() => setIsImageModalOpen(true)}
+                        className="group relative rounded-2xl overflow-hidden border border-slate-200 shadow-md bg-slate-900 cursor-pointer"
+                    >
+                        <img 
+                            src={asset.foto} 
+                            alt={asset.nama} 
+                            className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500 opacity-95 group-hover:opacity-100" 
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
+                        
+                        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white">
+                            <span className="inline-flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold border border-white/20">
+                                <Camera size={13} /> Foto Fisik Aset
+                            </span>
+                            <span className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full text-[11px] font-medium hover:bg-white/30 transition-colors">
+                                <Maximize2 size={12} /> Perbesar
+                            </span>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="rounded-2xl border-2 border-dashed border-slate-200/80 p-5 bg-slate-50/60 text-center flex flex-col items-center justify-center">
+                        <div className="w-11 h-11 rounded-2xl bg-white text-slate-400 flex items-center justify-center mb-2 border border-slate-200/80 shadow-2xs">
+                            <ImageIcon size={22} />
+                        </div>
+                        <p className="text-xs font-bold text-slate-700">Foto Fisik Belum Diunggah</p>
+                        <p className="text-[11px] text-slate-400 mt-0.5">Admin dapat mengunggah foto melalui halaman Edit Aset.</p>
+                    </div>
+                )}
+            </div>
 
             {/* Grid 4 Kartu Informasi Utama */}
             <div className="grid grid-cols-2 gap-2.5 mb-5">
@@ -263,6 +291,41 @@ export default function AssetDetail({ asset }) {
                     <ShieldCheck size={13} className="text-emerald-500" /> Informasi Resmi Sistem Inventaris
                 </p>
             </div>
+
+            {/* Modal Zoom Foto Aset (Lightbox) */}
+            {asset.foto && (
+                <AnimatePresence>
+                    {isImageModalOpen && (
+                        <div 
+                            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4"
+                            onClick={() => setIsImageModalOpen(false)}
+                        >
+                            <motion.div 
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                                className="relative max-w-2xl w-full flex flex-col items-center"
+                                onClick={e => e.stopPropagation()}
+                            >
+                                <button
+                                    onClick={() => setIsImageModalOpen(false)}
+                                    className="absolute -top-10 right-0 text-white hover:text-slate-300 bg-white/20 hover:bg-white/30 p-2 rounded-full backdrop-blur-md transition-colors cursor-pointer"
+                                >
+                                    <X size={18} />
+                                </button>
+                                <img
+                                    src={asset.foto}
+                                    alt={asset.nama}
+                                    className="max-w-full max-h-[80vh] rounded-2xl object-contain shadow-2xl border border-white/20"
+                                />
+                                <div className="mt-3 bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 text-white text-xs font-semibold text-center">
+                                    {asset.nama} — {asset.nomor_inventaris || asset.no_seri}
+                                </div>
+                            </motion.div>
+                        </div>
+                    )}
+                </AnimatePresence>
+            )}
         </GuestLayout>
     );
 }
