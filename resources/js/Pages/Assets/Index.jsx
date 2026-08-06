@@ -157,39 +157,41 @@ export default function Index({ assets, categories, locations, filters }) {
             <PageTransition>
                 <div className="w-full pb-10">
 
-                    {/* Top Search, Filters & Action Bar (Matching Consumable UI) */}
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <form onSubmit={handleSearch} className="w-full sm:flex-1 flex flex-wrap gap-2">
-                            <div className="relative flex-1 min-w-[200px]">
+                    {/* Top Search, Filters & Action Bar */}
+                    <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 mb-6">
+                        <form onSubmit={handleSearch} className="flex-1 flex flex-col sm:flex-row gap-2">
+                            <div className="relative flex-1">
                                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                                 <input
                                     type="text"
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
                                     placeholder="Cari nama, seri, merk..."
-                                    className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-[hsl(var(--primary))] focus:border-[hsl(var(--primary))]"
+                                    className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-[hsl(var(--primary))]"
                                 />
                             </div>
-                            <select
-                                value={statusFilter}
-                                onChange={e => { setStatusFilter(e.target.value); router.get(route('assets.index'), { search, status: e.target.value, category_id: categoryFilter, location_id: locationFilter }, { preserveState: true }); }}
-                                className="border border-slate-300 rounded-lg text-sm px-3 py-2 focus:ring-[hsl(var(--primary))]"
-                            >
-                                <option value="">Semua Status</option>
-                                <option value="tersedia">Tersedia</option>
-                                <option value="digunakan">Digunakan</option>
-                                <option value="maintenance">Maintenance</option>
-                                <option value="rusak">Rusak</option>
-                                <option value="tidak_aktif">Tidak Aktif</option>
-                            </select>
-                            <select
-                                value={categoryFilter}
-                                onChange={e => { setCategoryFilter(e.target.value); router.get(route('assets.index'), { search, status: statusFilter, category_id: e.target.value, location_id: locationFilter }, { preserveState: true }); }}
-                                className="border border-slate-300 rounded-lg text-sm px-3 py-2 focus:ring-[hsl(var(--primary))]"
-                            >
-                                <option value="">Semua Kategori</option>
-                                {categories.map(c => <option key={c.id} value={c.id}>{c.nama}</option>)}
-                            </select>
+                            <div className="grid grid-cols-2 sm:flex gap-2">
+                                <select
+                                    value={statusFilter}
+                                    onChange={e => { setStatusFilter(e.target.value); router.get(route('assets.index'), { search, status: e.target.value, category_id: categoryFilter, location_id: locationFilter }, { preserveState: true }); }}
+                                    className="w-full sm:w-auto border border-slate-300 rounded-lg text-sm px-3 py-2 focus:ring-[hsl(var(--primary))]"
+                                >
+                                    <option value="">Semua Status</option>
+                                    <option value="tersedia">Tersedia</option>
+                                    <option value="digunakan">Digunakan</option>
+                                    <option value="maintenance">Maintenance</option>
+                                    <option value="rusak">Rusak</option>
+                                    <option value="tidak_aktif">Tidak Aktif</option>
+                                </select>
+                                <select
+                                    value={categoryFilter}
+                                    onChange={e => { setCategoryFilter(e.target.value); router.get(route('assets.index'), { search, status: statusFilter, category_id: e.target.value, location_id: locationFilter }, { preserveState: true }); }}
+                                    className="w-full sm:w-auto border border-slate-300 rounded-lg text-sm px-3 py-2 focus:ring-[hsl(var(--primary))]"
+                                >
+                                    <option value="">Semua Kategori</option>
+                                    {categories.map(c => <option key={c.id} value={c.id}>{c.nama}</option>)}
+                                </select>
+                            </div>
                             {(search || statusFilter || categoryFilter || locationFilter) && (
                                 <button type="button" onClick={handleResetFilters} className="px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg flex items-center justify-center gap-1">
                                     <X size={14} /> Reset
@@ -200,7 +202,7 @@ export default function Index({ assets, categories, locations, filters }) {
                         <button
                             type="button"
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="flex items-center gap-2 bg-[hsl(var(--primary))] text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 whitespace-nowrap shadow-xs cursor-pointer"
+                            className="flex items-center justify-center gap-2 bg-[hsl(var(--primary))] text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 whitespace-nowrap shadow-xs cursor-pointer w-full md:w-auto"
                         >
                             <Plus size={16} /> Tambah Aset
                         </button>
@@ -253,7 +255,7 @@ export default function Index({ assets, categories, locations, filters }) {
                         />
                     </div>
 
-                    {/* Mobile View (Matching Consumable Collapsible Accordion UI) */}
+                    {/* Mobile View (Cohesive Light Theme Accordion) */}
                     <div className="md:hidden">
                         {assetList.length === 0 ? (
                             <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center mt-4">
@@ -274,39 +276,39 @@ export default function Index({ assets, categories, locations, filters }) {
                                     const isCategoryCollapsed = !!collapsedMobileCategories[category];
                                     return (
                                         <div key={category} className="space-y-3">
-                                            {/* Parent Category Header (High-Contrast Dark Theme - Level 1) */}
+                                            {/* Parent Category Header (Cohesive Light Slate Theme - Level 1) */}
                                             <button
                                                 type="button"
                                                 onClick={() => toggleMobileCategory(category)}
-                                                className="w-full sticky top-14 z-20 bg-slate-900 text-white p-3 rounded-2xl border border-slate-800 shadow-md flex items-center justify-between transition-all text-left cursor-pointer active:scale-[0.99]"
+                                                className="w-full sticky top-14 z-20 bg-slate-100/95 hover:bg-slate-200/80 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between transition-all text-left cursor-pointer"
                                             >
                                                 <div className="flex items-center gap-2.5">
-                                                    <div className="p-1.5 bg-indigo-500/20 text-indigo-400 rounded-lg shrink-0">
-                                                        <Layers size={16} />
+                                                    <div className="p-1.5 bg-white text-[hsl(var(--primary))] rounded-lg border border-slate-200/80 shadow-2xs shrink-0">
+                                                        <Layers size={15} />
                                                     </div>
-                                                    <span className="font-bold text-xs sm:text-sm tracking-wide uppercase">
+                                                    <span className="font-bold text-slate-800 text-xs sm:text-sm tracking-wide uppercase">
                                                         {category}
                                                     </span>
                                                     {isCategoryCollapsed ? (
                                                         <ChevronRight size={16} className="text-slate-400 shrink-0" />
                                                     ) : (
-                                                        <ChevronDown size={16} className="text-slate-400 shrink-0" />
+                                                        <ChevronDown size={16} className="text-slate-500 shrink-0" />
                                                     )}
                                                 </div>
-                                                <span className="text-[10px] font-bold text-white bg-white/15 px-3 py-1 rounded-full border border-white/20 shadow-2xs">
+                                                <span className="text-[10px] font-bold text-slate-700 bg-white px-2.5 py-0.5 rounded-full border border-slate-200 shadow-2xs">
                                                     {Object.values(baseGroups).flat().length} Aset
                                                 </span>
                                             </button>
 
                                             {/* Child Sub-Groups (Level 2 - Indented with Left Accent Line) */}
                                             {!isCategoryCollapsed && (
-                                                <div className="space-y-2.5 pl-3 border-l-2 border-indigo-200/80 my-1">
+                                                <div className="space-y-2.5 pl-3 border-l-2 border-[hsl(var(--primary)/0.3)] my-1.5">
                                                     {Object.entries(baseGroups).map(([baseName, items]) => {
                                                         const groupKey = `${category}-${baseName}`;
                                                         const isExpanded = expandedMobileGroups.has(groupKey);
                                                         
                                                         return (
-                                                        <div key={baseName} className="bg-white border border-slate-200/90 rounded-xl overflow-hidden shadow-2xs">
+                                                        <div key={baseName} className="bg-white border border-slate-200 shadow-2xs rounded-xl overflow-hidden">
                                                             {/* Base Name Header (Child Accordion Card) */}
                                                             <div 
                                                                 onClick={() => toggleMobileGroup(groupKey)}
@@ -317,12 +319,12 @@ export default function Index({ assets, categories, locations, filters }) {
                                                                         <Package size={14} />
                                                                     </div>
                                                                     {isExpanded ? (
-                                                                        <ChevronDown size={16} className="text-indigo-600 shrink-0" />
+                                                                        <ChevronDown size={16} className="text-[hsl(var(--primary))] shrink-0" />
                                                                     ) : (
                                                                         <ChevronRight size={16} className="text-slate-400 shrink-0" />
                                                                     )}
-                                                                    <span className="font-bold text-slate-800 text-xs sm:text-sm">{baseName}</span>
-                                                                    <span className="bg-indigo-50 text-indigo-700 font-bold border border-indigo-100 text-[10px] px-2 py-0.5 rounded-full">
+                                                                    <span className="font-semibold text-slate-700 text-xs sm:text-sm">{baseName}</span>
+                                                                    <span className="bg-slate-100 text-slate-600 font-bold border border-slate-200/80 text-[10px] px-2 py-0.5 rounded-full">
                                                                         {items.length} Item
                                                                     </span>
                                                                 </div>
@@ -337,7 +339,7 @@ export default function Index({ assets, categories, locations, filters }) {
                                                             
                                                             {/* Grandchild Asset Cards (Level 3 - Inner List) */}
                                                             {isExpanded && (
-                                                                <div className="p-2 space-y-2.5 bg-slate-50/60 border-t border-slate-200/80">
+                                                                <div className="p-2 space-y-2.5 bg-slate-50/70 border-t border-slate-200/80">
                                                                     {items.map(item => (
                                                                     <div key={item.id} className="bg-white rounded-xl border border-slate-200/80 shadow-2xs overflow-hidden flex flex-col">
                                                                         {/* Card Header */}
