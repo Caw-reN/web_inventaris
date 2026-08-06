@@ -481,9 +481,7 @@ export default function Index({ assets, categories, locations, filters }) {
                         )}
                     </div>
                 </div>
-
-            </div>
-        </PageTransition>
+            </PageTransition>
 
             <CreateModal 
                 isOpen={isCreateModalOpen} 
