@@ -6,6 +6,7 @@ import DataTable from '@/Components/DataTable';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import CreateModal from './CreateModal';
 import UseModal from './UseModal';
+import SelectInput from '@/Components/SelectInput';
 import { Plus, Search, Trash2, Edit, Eye, X, AlertTriangle, PackageMinus, ChevronDown, ChevronRight } from 'lucide-react';
 
 export default function Index({ consumables, categories, locations, filters }) {
@@ -143,22 +144,24 @@ export default function Index({ consumables, categories, locations, filters }) {
                                     className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-[hsl(var(--primary))]"
                                 />
                             </div>
-                            <select
+                            <SelectInput
                                 value={categoryFilter}
-                                onChange={e => { setCategoryFilter(e.target.value); router.get(route('consumables.index'), { search, category_id: e.target.value, stock_filter: stockFilter }, { preserveState: true }); }}
-                                className="border border-slate-300 rounded-lg text-sm px-3 py-2 focus:ring-[hsl(var(--primary))]"
-                            >
-                                <option value="">Semua Kategori</option>
-                                {categories.map(c => <option key={c.id} value={c.id}>{c.nama}</option>)}
-                            </select>
-                            <select
+                                onChange={val => { setCategoryFilter(val); router.get(route('consumables.index'), { search, category_id: val, stock_filter: stockFilter }, { preserveState: true }); }}
+                                options={[
+                                    { value: '', label: 'Semua Kategori' },
+                                    ...categories.map(c => ({ value: c.id, label: c.nama }))
+                                ]}
+                                className="min-w-[150px]"
+                            />
+                            <SelectInput
                                 value={stockFilter}
-                                onChange={e => { setStockFilter(e.target.value); router.get(route('consumables.index'), { search, category_id: categoryFilter, stock_filter: e.target.value }, { preserveState: true }); }}
-                                className="border border-slate-300 rounded-lg text-sm px-3 py-2 focus:ring-[hsl(var(--primary))]"
-                            >
-                                <option value="">Semua Stok</option>
-                                <option value="low_stock">Stok Menipis / Habis</option>
-                            </select>
+                                onChange={val => { setStockFilter(val); router.get(route('consumables.index'), { search, category_id: categoryFilter, stock_filter: val }, { preserveState: true }); }}
+                                options={[
+                                    { value: '', label: 'Semua Stok' },
+                                    { value: 'low_stock', label: 'Stok Menipis / Habis' }
+                                ]}
+                                className="min-w-[140px]"
+                            />
                             {(search || categoryFilter || stockFilter) && (
                                 <button type="button" onClick={handleResetFilters} className="px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg flex items-center gap-1">
                                     <X size={14} /> Reset

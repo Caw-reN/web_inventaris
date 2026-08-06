@@ -7,6 +7,7 @@ import StatusBadge from '@/Components/StatusBadge';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import CreateModal from './CreateModal';
 import QrModal from './QrModal';
+import SelectInput from '@/Components/SelectInput';
 import { Plus, Search, Filter, Trash2, Edit, Eye, X, Printer, QrCode, ChevronDown, ChevronRight, Layers, Package } from 'lucide-react';
 
 export default function Index({ assets, categories, locations, filters }) {
@@ -171,26 +172,28 @@ export default function Index({ assets, categories, locations, filters }) {
                                 />
                             </div>
                             <div className="grid grid-cols-2 sm:flex gap-2">
-                                <select
+                                <SelectInput
                                     value={statusFilter}
-                                    onChange={e => { setStatusFilter(e.target.value); router.get(route('assets.index'), { search, status: e.target.value, category_id: categoryFilter, location_id: locationFilter }, { preserveState: true }); }}
-                                    className="w-full sm:w-auto border border-slate-300 rounded-lg text-sm px-3 py-2 focus:ring-[hsl(var(--primary))]"
-                                >
-                                    <option value="">Semua Status</option>
-                                    <option value="tersedia">Tersedia</option>
-                                    <option value="digunakan">Digunakan</option>
-                                    <option value="maintenance">Maintenance</option>
-                                    <option value="rusak">Rusak</option>
-                                    <option value="tidak_aktif">Tidak Aktif</option>
-                                </select>
-                                <select
+                                    onChange={val => { setStatusFilter(val); router.get(route('assets.index'), { search, status: val, category_id: categoryFilter, location_id: locationFilter }, { preserveState: true }); }}
+                                    options={[
+                                        { value: '', label: 'Semua Status' },
+                                        { value: 'tersedia', label: 'Tersedia' },
+                                        { value: 'digunakan', label: 'Digunakan' },
+                                        { value: 'maintenance', label: 'Maintenance' },
+                                        { value: 'rusak', label: 'Rusak' },
+                                        { value: 'tidak_aktif', label: 'Tidak Aktif' }
+                                    ]}
+                                    className="w-full sm:min-w-[140px]"
+                                />
+                                <SelectInput
                                     value={categoryFilter}
-                                    onChange={e => { setCategoryFilter(e.target.value); router.get(route('assets.index'), { search, status: statusFilter, category_id: e.target.value, location_id: locationFilter }, { preserveState: true }); }}
-                                    className="w-full sm:w-auto border border-slate-300 rounded-lg text-sm px-3 py-2 focus:ring-[hsl(var(--primary))]"
-                                >
-                                    <option value="">Semua Kategori</option>
-                                    {categories.map(c => <option key={c.id} value={c.id}>{c.nama}</option>)}
-                                </select>
+                                    onChange={val => { setCategoryFilter(val); router.get(route('assets.index'), { search, status: statusFilter, category_id: val, location_id: locationFilter }, { preserveState: true }); }}
+                                    options={[
+                                        { value: '', label: 'Semua Kategori' },
+                                        ...categories.map(c => ({ value: c.id, label: c.nama }))
+                                    ]}
+                                    className="w-full sm:min-w-[150px]"
+                                />
                             </div>
                             {(search || statusFilter || categoryFilter || locationFilter) && (
                                 <button type="button" onClick={handleResetFilters} className="px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg flex items-center justify-center gap-1">

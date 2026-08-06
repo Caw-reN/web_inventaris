@@ -1,7 +1,8 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PageTransition from '@/Components/PageTransition';
-import { ArrowLeft, Save, UploadCloud } from 'lucide-react';
+import SelectInput from '@/Components/SelectInput';
+import { ArrowLeft, Save, UploadCloud, X } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Create({ categories, locations }) {
@@ -60,11 +61,13 @@ export default function Create({ categories, locations }) {
                                 {/* Kategori */}
                                 <div className="space-y-1">
                                     <label className="text-sm font-medium text-slate-700">Kategori <span className="text-red-500">*</span></label>
-                                    <select value={data.category_id} onChange={e => setData('category_id', e.target.value)} required
-                                        className={`w-full rounded-lg border text-sm focus:ring-[hsl(var(--primary))] ${errors.category_id ? 'border-red-500' : 'border-slate-300'}`}>
-                                        <option value="">Pilih Kategori</option>
-                                        {categories.map(c => <option key={c.id} value={c.id}>{c.nama}</option>)}
-                                    </select>
+                                    <SelectInput
+                                        value={data.category_id}
+                                        onChange={val => setData('category_id', val)}
+                                        options={categories.map(c => ({ value: c.id, label: c.nama }))}
+                                        placeholder="Pilih Kategori"
+                                        error={!!errors.category_id}
+                                    />
                                     {errors.category_id && <p className="text-red-500 text-xs">{errors.category_id}</p>}
                                 </div>
                                 {/* Merk */}
@@ -87,22 +90,29 @@ export default function Create({ categories, locations }) {
                                 {/* Lokasi */}
                                 <div className="space-y-1">
                                     <label className="text-sm font-medium text-slate-700">Lokasi Penempatan</label>
-                                    <select value={data.location_id} onChange={e => setData('location_id', e.target.value)}
-                                        className={`w-full rounded-lg border text-sm focus:ring-[hsl(var(--primary))] border-slate-300`}>
-                                        <option value="">Tidak Ditentukan</option>
-                                        {locations.map(l => <option key={l.id} value={l.id}>{l.full_path}</option>)}
-                                    </select>
+                                    <SelectInput
+                                        value={data.location_id}
+                                        onChange={val => setData('location_id', val)}
+                                        options={[
+                                            { value: '', label: 'Tidak Ditentukan' },
+                                            ...locations.map(l => ({ value: l.id, label: l.full_path || l.nama }))
+                                        ]}
+                                        placeholder="Tidak Ditentukan"
+                                    />
                                 </div>
                                 {/* Status */}
                                 <div className="space-y-1">
                                     <label className="text-sm font-medium text-slate-700">Status Awal <span className="text-red-500">*</span></label>
-                                    <select value={data.status} onChange={e => setData('status', e.target.value)} required
-                                        className={`w-full rounded-lg border text-sm focus:ring-[hsl(var(--primary))] border-slate-300`}>
-                                        <option value="tersedia">Tersedia</option>
-                                        <option value="digunakan">Digunakan</option>
-                                        <option value="maintenance">Maintenance</option>
-                                        <option value="rusak">Rusak</option>
-                                    </select>
+                                    <SelectInput
+                                        value={data.status}
+                                        onChange={val => setData('status', val)}
+                                        options={[
+                                            { value: 'tersedia', label: 'Tersedia' },
+                                            { value: 'digunakan', label: 'Digunakan' },
+                                            { value: 'maintenance', label: 'Maintenance' },
+                                            { value: 'rusak', label: 'Rusak' }
+                                        ]}
+                                    />
                                 </div>
                             </div>
 

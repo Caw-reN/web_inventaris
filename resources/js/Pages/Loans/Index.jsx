@@ -6,6 +6,7 @@ import DataTable from '@/Components/DataTable';
 import BorrowModal from './BorrowModal';
 import ReturnModal from './ReturnModal';
 import DetailModal from './DetailModal';
+import SelectInput from '@/Components/SelectInput';
 import { Plus, Search, Filter, Warehouse, Clock, CalendarDays, ArrowDownCircle, Eye, CheckCircle2 } from 'lucide-react';
 
 export default function Index({ loans, filters, availableAssets = [], borrowers = [] }) {
@@ -160,18 +161,19 @@ export default function Index({ loans, filters, availableAssets = [], borrowers 
                                     className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:border-[hsl(var(--primary))] focus:ring-1 focus:ring-[hsl(var(--primary))] outline-none"
                                 />
                             </div>
-                            <select
+                            <SelectInput
                                 value={status}
-                                onChange={(e) => {
-                                    setStatus(e.target.value);
-                                    router.get('/loans', { search, status: e.target.value }, { preserveState: true });
+                                onChange={(val) => {
+                                    setStatus(val);
+                                    router.get('/loans', { search, status: val }, { preserveState: true });
                                 }}
-                                className="border border-slate-200 rounded-lg text-sm px-3 py-2 bg-white focus:border-[hsl(var(--primary))] focus:ring-1 focus:ring-[hsl(var(--primary))] outline-none"
-                            >
-                                <option value="">Semua Status</option>
-                                <option value="dipinjam">Dipinjam</option>
-                                <option value="dikembalikan">Dikembalikan</option>
-                            </select>
+                                options={[
+                                    { value: '', label: 'Semua Status' },
+                                    { value: 'dipinjam', label: 'Dipinjam' },
+                                    { value: 'dikembalikan', label: 'Dikembalikan' }
+                                ]}
+                                className="min-w-[140px]"
+                            />
                             <button type="submit" className="hidden">Search</button>
                         </form>
                     </div>
