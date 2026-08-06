@@ -257,7 +257,7 @@ export default function Index({ reports, filters }) {
                                 initial={{ scale: 0.95, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0.95, opacity: 0 }}
-                                className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 space-y-4 overflow-hidden"
+                                className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full p-5 space-y-4 overflow-hidden"
                             >
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                                     <div className="flex items-center gap-2">
@@ -279,62 +279,77 @@ export default function Index({ reports, filters }) {
                                         <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
                                             Status Penanganan <span className="text-red-500">*</span>
                                         </label>
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                        <div className="space-y-2">
+                                            {/* Option 1: Open */}
                                             <button
                                                 type="button"
                                                 onClick={() => setEditStatus('open')}
-                                                className={`flex flex-col p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                                                className={`w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all cursor-pointer ${
                                                     editStatus === 'open'
-                                                        ? 'border-amber-400 bg-amber-50/80 text-amber-900 ring-2 ring-amber-400/20'
+                                                        ? 'border-amber-400 bg-amber-50/80 text-amber-900 ring-2 ring-amber-400/20 shadow-2xs'
                                                         : 'border-slate-200 bg-slate-50/60 hover:bg-slate-100 text-slate-700'
                                                 }`}
                                             >
-                                                <div className="flex items-center justify-between w-full mb-1.5">
-                                                    <div className={`p-1.5 rounded-lg ${editStatus === 'open' ? 'bg-amber-100 text-amber-700' : 'bg-slate-200/80 text-slate-500'}`}>
-                                                        <Clock size={16} />
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`p-2 rounded-lg shrink-0 ${editStatus === 'open' ? 'bg-amber-100 text-amber-700' : 'bg-slate-200/80 text-slate-500'}`}>
+                                                        <Clock size={18} />
                                                     </div>
-                                                    {editStatus === 'open' && <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />}
+                                                    <div>
+                                                        <p className="font-bold text-xs">Menunggu (Open)</p>
+                                                        <p className="text-[11px] text-slate-500">Laporan baru belum ditangani</p>
+                                                    </div>
                                                 </div>
-                                                <span className="font-bold text-xs">Menunggu</span>
-                                                <span className="text-[10px] text-slate-500 mt-0.5">Belum ditangani</span>
+                                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${editStatus === 'open' ? 'border-amber-500 bg-amber-500 text-white' : 'border-slate-300'}`}>
+                                                    {editStatus === 'open' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                </div>
                                             </button>
 
+                                            {/* Option 2: In Progress */}
                                             <button
                                                 type="button"
                                                 onClick={() => setEditStatus('in_progress')}
-                                                className={`flex flex-col p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                                                className={`w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all cursor-pointer ${
                                                     editStatus === 'in_progress'
-                                                        ? 'border-blue-500 bg-blue-50/80 text-blue-900 ring-2 ring-blue-500/20'
+                                                        ? 'border-blue-500 bg-blue-50/80 text-blue-900 ring-2 ring-blue-500/20 shadow-2xs'
                                                         : 'border-slate-200 bg-slate-50/60 hover:bg-slate-100 text-slate-700'
                                                 }`}
                                             >
-                                                <div className="flex items-center justify-between w-full mb-1.5">
-                                                    <div className={`p-1.5 rounded-lg ${editStatus === 'in_progress' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200/80 text-slate-500'}`}>
-                                                        <Wrench size={16} />
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`p-2 rounded-lg shrink-0 ${editStatus === 'in_progress' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200/80 text-slate-500'}`}>
+                                                        <Wrench size={18} />
                                                     </div>
-                                                    {editStatus === 'in_progress' && <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" />}
+                                                    <div>
+                                                        <p className="font-bold text-xs">Sedang Diproses (In Progress)</p>
+                                                        <p className="text-[11px] text-slate-500">Teknisi sedang melakukan perbaikan</p>
+                                                    </div>
                                                 </div>
-                                                <span className="font-bold text-xs">Sedang Diproses</span>
-                                                <span className="text-[10px] text-slate-500 mt-0.5">Teknisi memperbaiki</span>
+                                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${editStatus === 'in_progress' ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-300'}`}>
+                                                    {editStatus === 'in_progress' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                </div>
                                             </button>
 
+                                            {/* Option 3: Resolved */}
                                             <button
                                                 type="button"
                                                 onClick={() => setEditStatus('resolved')}
-                                                className={`flex flex-col p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                                                className={`w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all cursor-pointer ${
                                                     editStatus === 'resolved'
-                                                        ? 'border-emerald-500 bg-emerald-50/80 text-emerald-900 ring-2 ring-emerald-500/20'
+                                                        ? 'border-emerald-500 bg-emerald-50/80 text-emerald-900 ring-2 ring-emerald-500/20 shadow-2xs'
                                                         : 'border-slate-200 bg-slate-50/60 hover:bg-slate-100 text-slate-700'
                                                 }`}
                                             >
-                                                <div className="flex items-center justify-between w-full mb-1.5">
-                                                    <div className={`p-1.5 rounded-lg ${editStatus === 'resolved' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200/80 text-slate-500'}`}>
-                                                        <CheckCircle2 size={16} />
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`p-2 rounded-lg shrink-0 ${editStatus === 'resolved' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200/80 text-slate-500'}`}>
+                                                        <CheckCircle2 size={18} />
                                                     </div>
-                                                    {editStatus === 'resolved' && <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />}
+                                                    <div>
+                                                        <p className="font-bold text-xs">Selesai Ditangani (Resolved)</p>
+                                                        <p className="text-[11px] text-slate-500">Kendala telah selesai diperbaiki</p>
+                                                    </div>
                                                 </div>
-                                                <span className="font-bold text-xs">Selesai Ditangani</span>
-                                                <span className="text-[10px] text-slate-500 mt-0.5">Perbaikan tuntas</span>
+                                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${editStatus === 'resolved' ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300'}`}>
+                                                    {editStatus === 'resolved' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                                </div>
                                             </button>
                                         </div>
                                     </div>
