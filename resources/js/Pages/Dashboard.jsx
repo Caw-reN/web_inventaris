@@ -73,25 +73,25 @@ export default function Dashboard({ stats, lowStockItems, laporanTerbaru, asetTe
                     {/* Alert Stok Menipis */}
                     <ThresholdAlert items={lowStockItems} />
 
-                    {/* Pintasan Cepat Mobile (Quick Shortcuts) */}
-                    <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
-                        <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                                <Sparkles size={14} className="text-[hsl(var(--primary))]" /> Pintasan Cepat
+                    {/* Pintasan Cepat (Quick Shortcuts) */}
+                    <div className="bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 md:p-6 shadow-2xs">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-600 flex items-center gap-2">
+                                <Sparkles size={16} className="text-[hsl(var(--primary))]" /> Pintasan Cepat
                             </h3>
-                            <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">Mobile Actions</span>
+                            <span className="text-[10px] sm:text-xs bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full font-semibold border border-slate-200/60">Aksi Cepat</span>
                         </div>
-                        <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5">
+                        <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8 gap-3 sm:gap-4 md:gap-5">
                             {quickActions.map((act, i) => (
                                 <Link
                                     key={i}
                                     href={act.href}
-                                    className="flex flex-col items-center gap-1.5 p-2 rounded-xl text-center transition-all hover:bg-slate-50 active:scale-95 group"
+                                    className="flex flex-col items-center gap-2 p-2 sm:p-3 rounded-2xl text-center transition-all hover:bg-slate-50/80 hover:shadow-2xs active:scale-95 group"
                                 >
-                                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 ${act.color}`}>
-                                        <act.icon size={20} />
+                                    <div className={`w-11 h-11 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shadow-2xs transition-all duration-200 group-hover:scale-110 group-hover:shadow-md ${act.color}`}>
+                                        <act.icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
                                     </div>
-                                    <span className="text-[11px] font-medium text-slate-700 leading-tight truncate w-full">
+                                    <span className="text-[11px] sm:text-xs md:text-sm font-semibold text-slate-700 leading-snug group-hover:text-slate-900 transition-colors truncate w-full">
                                         {act.label}
                                     </span>
                                 </Link>
