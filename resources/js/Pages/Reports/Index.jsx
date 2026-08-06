@@ -279,7 +279,7 @@ export default function Index({ reports, filters }) {
                                                         </button>
                                                         <button
                                                             onClick={() => openEditModal(report)}
-                                                            className="p-1.5 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg font-medium transition-colors text-xs flex items-center gap-1"
+                                                            className="p-1.5 text-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.1)] hover:bg-[hsl(var(--primary)/0.2)] rounded-lg font-medium transition-colors text-xs flex items-center gap-1"
                                                             title="Tindak Lanjuti Laporan"
                                                         >
                                                             <Wrench size={14} /> Update
@@ -381,7 +381,7 @@ export default function Index({ reports, filters }) {
                                         </button>
                                         <button
                                             onClick={() => openEditModal(report)}
-                                            className="flex-1 py-1.5 px-3 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-colors shadow-2xs cursor-pointer"
+                                            className="flex-1 py-1.5 px-3 bg-[hsl(var(--primary))] text-white hover:opacity-90 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-all shadow-2xs cursor-pointer"
                                         >
                                             <Wrench size={14} /> Tindak Lanjuti
                                         </button>
