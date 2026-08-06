@@ -173,8 +173,63 @@ export default function Index({ assets, categories, locations, filters }) {
                         </button>
                     </div>
 
-                    {/* Integrated Table Card with Header */}
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+                    {/* Mobile Dedicated Search & Filter Card */}
+                    <div className="md:hidden bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 mb-4">
+                        <div className="flex items-center gap-2.5 mb-3">
+                            <div className="bg-[hsl(var(--primary)/0.1)] p-2 rounded-xl text-[hsl(var(--primary))] shrink-0 border border-[hsl(var(--primary)/0.15)]">
+                                <Boxes size={18} />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-slate-800 text-sm">Filter & Pencarian Aset</h3>
+                                <p className="text-[11px] text-slate-500">Cari kata kunci atau saring berdasarkan kategori & status.</p>
+                            </div>
+                        </div>
+
+                        <form onSubmit={handleSearch} className="space-y-2.5">
+                            <div className="relative w-full">
+                                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                                <input
+                                    type="text"
+                                    value={search}
+                                    onChange={e => setSearch(e.target.value)}
+                                    placeholder="Cari nama, seri, merk..."
+                                    className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-[hsl(var(--primary))] focus:ring-1 focus:ring-[hsl(var(--primary))]"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <SelectInput
+                                    value={statusFilter}
+                                    onChange={val => { setStatusFilter(val); router.get(route('assets.index'), { search, status: val, category_id: categoryFilter, location_id: locationFilter }, { preserveState: true }); }}
+                                    options={[
+                                        { value: '', label: 'Semua Status' },
+                                        { value: 'tersedia', label: 'Tersedia' },
+                                        { value: 'digunakan', label: 'Digunakan' },
+                                        { value: 'maintenance', label: 'Maintenance' },
+                                        { value: 'rusak', label: 'Rusak' },
+                                        { value: 'tidak_aktif', label: 'Tidak Aktif' }
+                                    ]}
+                                    className="w-full"
+                                />
+                                <SelectInput
+                                    value={categoryFilter}
+                                    onChange={val => { setCategoryFilter(val); router.get(route('assets.index'), { search, status: statusFilter, category_id: val, location_id: locationFilter }, { preserveState: true }); }}
+                                    options={[
+                                        { value: '', label: 'Semua Kategori' },
+                                        ...categories.map(c => ({ value: c.id, label: c.nama }))
+                                    ]}
+                                    className="w-full"
+                                />
+                            </div>
+                            {(search || statusFilter || categoryFilter || locationFilter) && (
+                                <button type="button" onClick={handleResetFilters} className="w-full py-1.5 text-xs text-slate-600 hover:bg-slate-100 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center gap-1 font-medium">
+                                    <X size={14} /> Reset Filter
+                                </button>
+                            )}
+                        </form>
+                    </div>
+
+                    {/* Desktop Integrated Table Card */}
+                    <div className="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
                         {/* Table Header Section */}
                         <div className="p-4 md:p-5 border-b border-slate-100 flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between bg-slate-50/70">
                             <div className="flex items-center gap-3">
@@ -187,7 +242,7 @@ export default function Index({ assets, categories, locations, filters }) {
                                 </div>
                             </div>
 
-                            {/* Integrated Search & Filter Controls */}
+                            {/* Integrated Search & Filter Controls (Desktop) */}
                             <form onSubmit={handleSearch} className="w-full lg:w-auto flex flex-col sm:flex-row gap-2">
                                 <div className="relative flex-1 sm:w-64">
                                     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -199,7 +254,7 @@ export default function Index({ assets, categories, locations, filters }) {
                                         className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-[hsl(var(--primary))] focus:ring-1 focus:ring-[hsl(var(--primary))]"
                                     />
                                 </div>
-                                <div className="grid grid-cols-2 sm:flex gap-2">
+                                <div className="flex gap-2">
                                     <SelectInput
                                         value={statusFilter}
                                         onChange={val => { setStatusFilter(val); router.get(route('assets.index'), { search, status: val, category_id: categoryFilter, location_id: locationFilter }, { preserveState: true }); }}
@@ -211,7 +266,7 @@ export default function Index({ assets, categories, locations, filters }) {
                                             { value: 'rusak', label: 'Rusak' },
                                             { value: 'tidak_aktif', label: 'Tidak Aktif' }
                                         ]}
-                                        className="w-full sm:min-w-[130px]"
+                                        className="min-w-[130px]"
                                     />
                                     <SelectInput
                                         value={categoryFilter}
@@ -220,7 +275,7 @@ export default function Index({ assets, categories, locations, filters }) {
                                             { value: '', label: 'Semua Kategori' },
                                             ...categories.map(c => ({ value: c.id, label: c.nama }))
                                         ]}
-                                        className="w-full sm:min-w-[145px]"
+                                        className="min-w-[145px]"
                                     />
                                 </div>
                                 {(search || statusFilter || categoryFilter || locationFilter) && (
@@ -231,15 +286,14 @@ export default function Index({ assets, categories, locations, filters }) {
                             </form>
                         </div>
 
-                        {/* Desktop View */}
-                        <div className="hidden md:block">
-                            <DataTable 
-                                columns={columns} 
-                                data={assets} 
-                                groupBy={[
-                                    (row) => row.category?.nama || 'Tanpa Kategori',
-                                    (row) => row.nama.replace(/\s-\s\d+$/, '')
-                                ]}
+                        {/* Desktop Table View */}
+                        <DataTable 
+                            columns={columns} 
+                            data={assets} 
+                            groupBy={[
+                                (row) => row.category?.nama || 'Tanpa Kategori',
+                                (row) => row.nama.replace(/\s-\s\d+$/, '')
+                            ]}
                             groupHeader={(key, items, depth) => {
                                 if (depth === 0) {
                                     return (
@@ -278,7 +332,7 @@ export default function Index({ assets, categories, locations, filters }) {
                         />
                     </div>
 
-                    {/* Mobile View (Cohesive Light Theme Accordion) */}
+                    {/* Mobile View List */}
                     <div className="md:hidden">
                         {assetList.length === 0 ? (
                             <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center mt-4">
