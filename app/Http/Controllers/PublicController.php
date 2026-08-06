@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Asset;
+use App\Models\Loan;
 use App\Models\Report;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -54,6 +55,41 @@ class PublicController extends Controller
         return Inertia::render('Public/AssetDetail', [
             'asset' => $publicAsset,
         ]);
+    }
+
+    /**
+     * Proses pengajuan peminjaman dari portal publik.
+     */
+    public function pinjam(Request $request, string $uuid): RedirectResponse
+    {
+        $asset = Asset::where('uuid', $uuid)->firstOrFail();
+
+        if ($asset->status !== 'tersedia') {
+            return back()->with('error', 'Aset saat ini tidak tersedia untuk dipinjam.');
+        }
+
+        $validated = $request->validate([
+            'nama_peminjam'  => 'required|string|max:255',
+            'kelas_unit'     => 'nullable|string|max:100',
+            'tenggat_waktu'   => 'nullable|date|after_or_equal:today',
+            'catatan_pinjam' => 'nullable|string|max:1000',
+        ]);
+
+        Loan::create([
+            'asset_id'       => $asset->id,
+            'user_id'        => auth()->id() ?? null,
+            'nama_peminjam'  => $validated['nama_peminjam'],
+            'kelas_unit'     => $validated['kelas_unit'] ?? null,
+            'tanggal_pinjam' => now(),
+            'tenggat_waktu'   => $validated['tenggat_waktu'] ?? null,
+            'catatan_pinjam' => $validated['catatan_pinjam'] ?? null,
+            'status'         => 'dipinjam',
+        ]);
+
+        $asset->update(['status' => 'digunakan']);
+
+        return redirect()->route('public.success', $uuid)
+            ->with('success', 'Pengajuan peminjaman aset berhasil dicatat!');
     }
 
     /**

@@ -21,6 +21,9 @@ Route::prefix('aset')->name('public.')->group(function () {
     Route::post('/{uuid}/laporan', [PublicController::class, 'laporkan'])
         ->middleware('throttle:3,10') // Max 3 laporan per 10 menit per IP
         ->name('report');
+    Route::post('/{uuid}/pinjam', [PublicController::class, 'pinjam'])
+        ->middleware('throttle:3,10') // Max 3 pengajuan per 10 menit per IP
+        ->name('pinjam');
     Route::get('/{uuid}/sukses', [PublicController::class, 'success'])->name('success');
 });
 

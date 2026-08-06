@@ -1,24 +1,38 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import StatusBadge from '@/Components/StatusBadge';
-import { Tag, MapPin, AlertTriangle, Send, Info, ShieldAlert, Cpu, Barcode, Calendar, UserCheck, Wrench, ShieldCheck, Camera, Image as ImageIcon, Maximize2, X } from 'lucide-react';
+import { Tag, MapPin, AlertTriangle, Send, Info, ShieldAlert, Cpu, Barcode, Calendar, UserCheck, Wrench, ShieldCheck, Camera, Image as ImageIcon, Maximize2, X, PackagePlus, ArrowUpCircle } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AssetDetail({ asset }) {
     const { flash } = usePage().props;
-    const [showForm, setShowForm] = useState(false);
+    const [activeForm, setActiveForm] = useState('none'); // 'none' | 'borrow' | 'report'
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
-    const { data, setData, post, processing, errors } = useForm({
+    // Form Lapor Kendala
+    const reportForm = useForm({
         nama_pelapor: '',
         kelas: '',
         deskripsi_kendala: '',
     });
 
-    const handleSubmit = (e) => {
+    // Form Ajukan Peminjaman
+    const borrowForm = useForm({
+        nama_peminjam: '',
+        kelas_unit: '',
+        tenggat_waktu: '',
+        catatan_pinjam: '',
+    });
+
+    const handleReportSubmit = (e) => {
         e.preventDefault();
-        post(route('public.report', asset.uuid));
+        reportForm.post(route('public.report', asset.uuid));
+    };
+
+    const handleBorrowSubmit = (e) => {
+        e.preventDefault();
+        borrowForm.post(route('public.pinjam', asset.uuid));
     };
 
     // Helper untuk merender spesifikasi jika berupa object/array
@@ -194,16 +208,127 @@ export default function AssetDetail({ asset }) {
                 </div>
             )}
 
-            {/* Form Lapor Kerusakan / Kendala */}
+            {/* Tombol Aksi Utama (Pinjam & Lapor) */}
             <div className="pt-4 border-t border-slate-100">
-                {!showForm ? (
-                    <button
-                        onClick={() => setShowForm(true)}
-                        className="w-full flex items-center justify-center gap-2.5 py-3.5 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white transition-all shadow-md hover:shadow-lg active:scale-[0.99] cursor-pointer"
-                    >
-                        <ShieldAlert size={18} /> Lapor Kerusakan / Kendala
-                    </button>
-                ) : (
+                {activeForm === 'none' && (
+                    <div className="space-y-2.5">
+                        {/* Tombol Pinjam */}
+                        {asset.status === 'tersedia' ? (
+                            <button
+                                onClick={() => setActiveForm('borrow')}
+                                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm bg-[hsl(var(--primary))] hover:opacity-90 text-white transition-all shadow-md active:scale-[0.99] cursor-pointer"
+                            >
+                                <PackagePlus size={18} /> Ajukan Peminjaman Aset
+                            </button>
+                        ) : (
+                            <div className="w-full text-center py-2.5 px-4 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 text-xs font-semibold">
+                                Aset Tidak Tersedia untuk Dipinjam ({asset.status_label})
+                            </div>
+                        )}
+
+                        {/* Tombol Lapor Kendala */}
+                        <button
+                            onClick={() => setActiveForm('report')}
+                            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-xs bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 transition-all cursor-pointer"
+                        >
+                            <ShieldAlert size={16} /> Lapor Kerusakan / Kendala
+                        </button>
+                    </div>
+                )}
+
+                {/* Form 1: Form Ajukan Peminjaman */}
+                {activeForm === 'borrow' && (
+                    <AnimatePresence>
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                        >
+                            <div className="bg-slate-50 rounded-2xl border border-slate-200 p-5 shadow-inner space-y-4">
+                                <div className="flex items-center justify-between pb-3 border-b border-slate-200/80">
+                                    <div className="flex items-center gap-2">
+                                        <div className="p-1.5 bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] rounded-lg">
+                                            <PackagePlus size={16} />
+                                        </div>
+                                        <h3 className="font-bold text-slate-900 text-sm">Form Pengajuan Peminjaman</h3>
+                                    </div>
+                                    <span className="text-[10px] font-semibold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
+                                        Portal Publik
+                                    </span>
+                                </div>
+
+                                <form onSubmit={handleBorrowSubmit} className="space-y-3.5">
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-semibold text-slate-700">Nama Peminjam <span className="text-red-500">*</span></label>
+                                        <input 
+                                            type="text" 
+                                            value={borrowForm.data.nama_peminjam} 
+                                            onChange={e => borrowForm.setData('nama_peminjam', e.target.value)} 
+                                            required
+                                            placeholder="Masukkan nama lengkap Anda..."
+                                            className="w-full bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:ring-[hsl(var(--primary))] focus:border-[hsl(var(--primary))] px-3 py-2 shadow-2xs" 
+                                        />
+                                        {borrowForm.errors.nama_peminjam && <p className="text-red-500 text-xs mt-0.5">{borrowForm.errors.nama_peminjam}</p>}
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-semibold text-slate-700">Kelas / Unit Workstation (Opsional)</label>
+                                        <input 
+                                            type="text" 
+                                            value={borrowForm.data.kelas_unit} 
+                                            onChange={e => borrowForm.setData('kelas_unit', e.target.value)}
+                                            placeholder="Contoh: XII TKJ 1 / Lab Komputer 2..."
+                                            className="w-full bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:ring-[hsl(var(--primary))] focus:border-[hsl(var(--primary))] px-3 py-2 shadow-2xs" 
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-semibold text-slate-700">Tenggat Waktu Pengembalian (Opsional)</label>
+                                        <input 
+                                            type="date" 
+                                            value={borrowForm.data.tenggat_waktu} 
+                                            onChange={e => borrowForm.setData('tenggat_waktu', e.target.value)}
+                                            min={new Date().toISOString().split('T')[0]}
+                                            className="w-full bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:ring-[hsl(var(--primary))] focus:border-[hsl(var(--primary))] px-3 py-2 shadow-2xs" 
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-semibold text-slate-700">Catatan / Keperluan Pinjam (Opsional)</label>
+                                        <textarea 
+                                            rows="2" 
+                                            value={borrowForm.data.catatan_pinjam} 
+                                            onChange={e => borrowForm.setData('catatan_pinjam', e.target.value)}
+                                            placeholder="Contoh: Untuk keperluan ujian / praktikum jaringan..."
+                                            className="w-full bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:ring-[hsl(var(--primary))] focus:border-[hsl(var(--primary))] px-3 py-2 shadow-2xs" 
+                                        />
+                                    </div>
+
+                                    <div className="flex gap-2 pt-2">
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setActiveForm('none')} 
+                                            className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold text-slate-600 bg-white border border-slate-300 hover:bg-slate-100 transition-colors"
+                                        >
+                                            Batal
+                                        </button>
+                                        <button 
+                                            type="submit" 
+                                            disabled={borrowForm.processing} 
+                                            className="flex-[2] flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold bg-[hsl(var(--primary))] text-white hover:opacity-90 transition-opacity disabled:opacity-50 shadow-xs cursor-pointer"
+                                        >
+                                            <Send size={14} /> {borrowForm.processing ? 'Mengirim...' : 'Kirim Pengajuan Pinjam'}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </motion.div>
+                    </AnimatePresence>
+                )}
+
+                {/* Form 2: Form Lapor Kendala */}
+                {activeForm === 'report' && (
                     <AnimatePresence>
                         <motion.div
                             initial={{ height: 0, opacity: 0 }}
@@ -224,26 +349,26 @@ export default function AssetDetail({ asset }) {
                                     </span>
                                 </div>
 
-                                <form onSubmit={handleSubmit} className="space-y-3.5">
+                                <form onSubmit={handleReportSubmit} className="space-y-3.5">
                                     <div className="space-y-1">
                                         <label className="text-xs font-semibold text-slate-700">Nama Pelapor <span className="text-red-500">*</span></label>
                                         <input 
                                             type="text" 
-                                            value={data.nama_pelapor} 
-                                            onChange={e => setData('nama_pelapor', e.target.value)} 
+                                            value={reportForm.data.nama_pelapor} 
+                                            onChange={e => reportForm.setData('nama_pelapor', e.target.value)} 
                                             required
                                             placeholder="Masukkan nama lengkap Anda..."
                                             className="w-full bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:ring-[hsl(var(--primary))] focus:border-[hsl(var(--primary))] px-3 py-2 shadow-2xs" 
                                         />
-                                        {errors.nama_pelapor && <p className="text-red-500 text-xs mt-0.5">{errors.nama_pelapor}</p>}
+                                        {reportForm.errors.nama_pelapor && <p className="text-red-500 text-xs mt-0.5">{reportForm.errors.nama_pelapor}</p>}
                                     </div>
 
                                     <div className="space-y-1">
                                         <label className="text-xs font-semibold text-slate-700">Kelas / Unit Workstation (Opsional)</label>
                                         <input 
                                             type="text" 
-                                            value={data.kelas} 
-                                            onChange={e => setData('kelas', e.target.value)}
+                                            value={reportForm.data.kelas} 
+                                            onChange={e => reportForm.setData('kelas', e.target.value)}
                                             placeholder="Contoh: XII TKJ 1 / Meja Server 3..."
                                             className="w-full bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:ring-[hsl(var(--primary))] focus:border-[hsl(var(--primary))] px-3 py-2 shadow-2xs" 
                                         />
@@ -253,29 +378,29 @@ export default function AssetDetail({ asset }) {
                                         <label className="text-xs font-semibold text-slate-700">Deskripsi Kendala <span className="text-red-500">*</span></label>
                                         <textarea 
                                             rows="3" 
-                                            value={data.deskripsi_kendala} 
-                                            onChange={e => setData('deskripsi_kendala', e.target.value)} 
+                                            value={reportForm.data.deskripsi_kendala} 
+                                            onChange={e => reportForm.setData('deskripsi_kendala', e.target.value)} 
                                             required
                                             placeholder="Jelaskan secara rinci kendala atau kerusakan yang ditemukan..."
                                             className="w-full bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:ring-[hsl(var(--primary))] focus:border-[hsl(var(--primary))] px-3 py-2 shadow-2xs" 
                                         />
-                                        {errors.deskripsi_kendala && <p className="text-red-500 text-xs mt-0.5">{errors.deskripsi_kendala}</p>}
+                                        {reportForm.errors.deskripsi_kendala && <p className="text-red-500 text-xs mt-0.5">{reportForm.errors.deskripsi_kendala}</p>}
                                     </div>
 
                                     <div className="flex gap-2 pt-2">
                                         <button 
                                             type="button" 
-                                            onClick={() => setShowForm(false)} 
+                                            onClick={() => setActiveForm('none')} 
                                             className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold text-slate-600 bg-white border border-slate-300 hover:bg-slate-100 transition-colors"
                                         >
                                             Batal
                                         </button>
                                         <button 
                                             type="submit" 
-                                            disabled={processing} 
+                                            disabled={reportForm.processing} 
                                             className="flex-[2] flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50 shadow-xs cursor-pointer"
                                         >
-                                            <Send size={14} /> {processing ? 'Mengirim...' : 'Kirim Laporan'}
+                                            <Send size={14} /> {reportForm.processing ? 'Mengirim...' : 'Kirim Laporan'}
                                         </button>
                                     </div>
                                 </form>
