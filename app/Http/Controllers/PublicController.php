@@ -118,11 +118,11 @@ class PublicController extends Controller
     }
 
     /**
-     * Halaman konfirmasi laporan berhasil dikirim.
+     * Halaman konfirmasi laporan / peminjaman berhasil dikirim.
      */
     public function success(string $uuid): Response
     {
-        $asset = Asset::where('uuid', $uuid)->select('uuid', 'nama')->firstOrFail();
+        $asset = Asset::where('uuid', $uuid)->select('uuid', 'nama', 'nomor_inventaris', 'no_seri')->firstOrFail();
 
         return Inertia::render('Public/ReportSuccess', [
             'asset' => $asset,
