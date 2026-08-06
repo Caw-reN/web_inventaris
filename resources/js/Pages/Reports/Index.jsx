@@ -94,12 +94,12 @@ export default function Index({ reports, filters }) {
                             />
                         </form>
 
-                                    {/* Status Filter Pills (Mobile Scrollable) */}
-                        <div className="flex items-center gap-2 overflow-x-auto pb-1 shrink-0 scrollbar-none">
+                                    {/* Status Filter Pills (Mobile 4-Column Grid) */}
+                        <div className="grid grid-cols-4 gap-1 sm:gap-1.5 w-full">
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('')}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                                className={`w-full py-2 rounded-lg text-[11px] font-semibold transition-all cursor-pointer text-center flex items-center justify-center ${
                                     statusFilter === '' 
                                         ? 'bg-slate-900 text-white shadow-2xs' 
                                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -110,35 +110,35 @@ export default function Index({ reports, filters }) {
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('open')}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                                className={`w-full py-2 rounded-lg text-[11px] font-semibold transition-all cursor-pointer flex items-center justify-center gap-1 ${
                                     statusFilter === 'open' 
                                         ? 'bg-amber-500 text-white shadow-2xs' 
                                         : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200/60'
                                 }`}
                             >
-                                <Clock size={13} /> Menunggu
+                                <Clock size={12} className="shrink-0" /> <span className="truncate">Menunggu</span>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('in_progress')}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                                className={`w-full py-2 rounded-lg text-[11px] font-semibold transition-all cursor-pointer flex items-center justify-center gap-1 ${
                                     statusFilter === 'in_progress' 
                                         ? 'bg-blue-600 text-white shadow-2xs' 
                                         : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/60'
                                 }`}
                             >
-                                <Wrench size={13} /> Diproses
+                                <Wrench size={12} className="shrink-0" /> <span className="truncate">Diproses</span>
                             </button>
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('resolved')}
-                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                                className={`w-full py-2 rounded-lg text-[11px] font-semibold transition-all cursor-pointer flex items-center justify-center gap-1 ${
                                     statusFilter === 'resolved' 
                                         ? 'bg-emerald-600 text-white shadow-2xs' 
                                         : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/60'
                                 }`}
                             >
-                                <CheckCircle2 size={13} /> Selesai
+                                <CheckCircle2 size={12} className="shrink-0" /> <span className="truncate">Selesai</span>
                             </button>
                         </div>
                     </div>
