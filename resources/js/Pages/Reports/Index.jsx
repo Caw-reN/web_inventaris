@@ -81,10 +81,71 @@ export default function Index({ reports, filters }) {
 
             <PageTransition>
                 <div className="w-full space-y-4 pb-12">
-                    {/* Filter & Search Bar */}
-                    <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs">
+                    {/* Mobile Search & Filter Card */}
+                    <div className="md:hidden bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 space-y-3">
+                        <form onSubmit={handleSearch} className="relative w-full">
+                            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder="Cari pelapor, kelas, atau aset..."
+                                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)] focus:border-[hsl(var(--primary))]"
+                            />
+                        </form>
+
+                        {/* Status Filter Pills (Mobile Scrollable) */}
+                        <div className="flex items-center gap-2 overflow-x-auto pb-1 shrink-0 scrollbar-none">
+                            <button
+                                type="button"
+                                onClick={() => handleFilterStatus('')}
+                                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                                    statusFilter === '' 
+                                        ? 'bg-slate-900 text-white shadow-2xs' 
+                                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                }`}
+                            >
+                                Semua
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleFilterStatus('open')}
+                                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                                    statusFilter === 'open' 
+                                        ? 'bg-amber-500 text-white shadow-2xs' 
+                                        : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200/60'
+                                }`}
+                            >
+                                <Clock size={13} /> Menunggu
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleFilterStatus('in_progress')}
+                                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                                    statusFilter === 'in_progress' 
+                                        ? 'bg-blue-600 text-white shadow-2xs' 
+                                        : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/60'
+                                }`}
+                            >
+                                <Wrench size={13} /> Diproses
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleFilterStatus('resolved')}
+                                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                                    statusFilter === 'resolved' 
+                                        ? 'bg-emerald-600 text-white shadow-2xs' 
+                                        : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/60'
+                                }`}
+                            >
+                                <CheckCircle2 size={13} /> Selesai
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Desktop Search & Filter Bar */}
+                    <div className="hidden md:block bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs">
                         <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
-                            {/* Search Input */}
                             <form onSubmit={handleSearch} className="relative flex-1 min-w-[240px]">
                                 <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                 <input
@@ -92,12 +153,11 @@ export default function Index({ reports, filters }) {
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                     placeholder="Cari pelapor, kelas, atau aset..."
-                                    className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)] focus:border-[hsl(var(--primary))] transition-all shadow-2xs"
+                                    className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)] focus:border-[hsl(var(--primary))]"
                                 />
                             </form>
 
-                            {/* Status Filter Pills */}
-                            <div className="flex items-center gap-2 shrink-0 overflow-x-auto pb-1 sm:pb-0">
+                            <div className="flex items-center gap-2 shrink-0">
                                 <button
                                     type="button"
                                     onClick={() => handleFilterStatus('')}
@@ -147,7 +207,7 @@ export default function Index({ reports, filters }) {
                     </div>
 
                     {/* Table View (Desktop) */}
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+                    <div className="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
@@ -249,9 +309,103 @@ export default function Index({ reports, filters }) {
                             </table>
                         </div>
 
-                        {/* Pagination */}
+                        {/* Pagination Desktop */}
                         {reports.data && reports.data.length > 0 && (
                             <div className="p-4 border-t border-slate-100">
+                                <Pagination links={reports.links} />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Mobile Card List View */}
+                    <div className="md:hidden space-y-3">
+                        {reports.data && reports.data.length > 0 ? (
+                            reports.data.map((report) => (
+                                <div key={report.id} className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+                                    {/* Card Header */}
+                                    <div className="p-3.5 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <div className="p-1.5 bg-slate-200/80 text-slate-700 rounded-lg shrink-0">
+                                                <User size={14} />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <h4 className="font-bold text-slate-800 text-xs truncate">{report.nama_pelapor}</h4>
+                                                <span className="inline-block text-[10px] font-semibold text-slate-600 bg-slate-200/60 px-1.5 py-0.2 rounded border border-slate-200">
+                                                    {report.kelas}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="shrink-0 flex flex-col items-end">
+                                            {getStatusBadge(report.status)}
+                                            <span className="text-[10px] text-slate-400 mt-1">
+                                                {new Date(report.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })} • {new Date(report.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Card Content */}
+                                    <div className="p-3.5 space-y-2.5">
+                                        <div className="flex items-start justify-between gap-2 bg-slate-50/60 p-2.5 rounded-xl border border-slate-100">
+                                            <div className="min-w-0">
+                                                <p className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Aset Terkait</p>
+                                                {report.asset ? (
+                                                    <Link href={route('assets.show', report.asset.id)} className="font-bold text-xs text-slate-800 hover:text-[hsl(var(--primary))] flex items-center gap-1 mt-0.5 truncate">
+                                                        {report.asset.nama} <ArrowUpRight size={12} className="text-slate-400" />
+                                                    </Link>
+                                                ) : (
+                                                    <span className="text-xs text-slate-400 italic">Aset Dihapus</span>
+                                                )}
+                                            </div>
+                                            {report.asset && (
+                                                <span className="text-[10px] font-mono text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200 shrink-0">
+                                                    {report.asset.nomor_inventaris || report.asset.no_seri}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-bold uppercase text-red-600 tracking-wider">Deskripsi Kendala</p>
+                                            <p className="text-xs text-slate-700 leading-relaxed font-medium bg-red-50/50 p-2.5 rounded-xl border border-red-100">
+                                                {report.deskripsi_kendala}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Card Footer Actions */}
+                                    <div className="p-2.5 bg-slate-50/80 border-t border-slate-100 flex items-center gap-2">
+                                        <button
+                                            onClick={() => setDetailReport(report)}
+                                            className="flex-1 py-1.5 px-3 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-colors shadow-2xs"
+                                        >
+                                            <Eye size={14} /> Detail
+                                        </button>
+                                        <button
+                                            onClick={() => openEditModal(report)}
+                                            className="flex-1 py-1.5 px-3 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-colors shadow-2xs cursor-pointer"
+                                        >
+                                            <Wrench size={14} /> Tindak Lanjuti
+                                        </button>
+                                        {auth.user?.is_admin && (
+                                            <button
+                                                onClick={() => handleDelete(report.id)}
+                                                className="p-1.5 text-red-600 bg-white border border-red-200 hover:bg-red-50 rounded-xl transition-colors shrink-0 cursor-pointer shadow-2xs"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400">
+                                <AlertTriangle size={32} className="mx-auto mb-2 opacity-50 text-slate-400" />
+                                <p className="font-semibold text-sm">Tidak ada laporan kendala ditemukan.</p>
+                            </div>
+                        )}
+
+                        {/* Mobile Pagination */}
+                        {reports.data && reports.data.length > 0 && (
+                            <div className="pt-2">
                                 <Pagination links={reports.links} />
                             </div>
                         )}
