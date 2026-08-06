@@ -6,7 +6,7 @@ import QrCodeCard from '@/Components/QrCodeCard';
 import AuditLogTimeline from '@/Components/AuditLogTimeline';
 import BorrowModal from '../Loans/BorrowModal';
 import ReturnModal from '../Loans/ReturnModal';
-import { ArrowLeft, Edit, MapPin, Tag, Calendar, DollarSign, Activity, FileWarning, Warehouse, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
+import { ArrowLeft, Edit, MapPin, Tag, Calendar, DollarSign, Activity, FileWarning, Warehouse, ArrowDownCircle, ArrowUpCircle, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Show({ asset, auditLog, borrowers = [] }) {
@@ -24,7 +24,16 @@ export default function Show({ asset, auditLog, borrowers = [] }) {
                         <Link href={route('assets.index')} className="text-slate-500 hover:text-slate-700 inline-flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
                             <ArrowLeft size={16} /> Kembali ke Daftar
                         </Link>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <a 
+                                href={route('public.asset', asset.uuid)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 sm:flex-initial bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 px-3.5 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors shadow-xs whitespace-nowrap"
+                                title="Pratinjau Halaman Publik (Hasil Scan QR)"
+                            >
+                                <ExternalLink size={16} /> Portal Publik
+                            </a>
                             {asset.status === 'tersedia' && (
                                 <button 
                                     onClick={() => setShowBorrowModal(true)}

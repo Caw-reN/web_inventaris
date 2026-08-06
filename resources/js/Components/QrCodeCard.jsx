@@ -1,4 +1,4 @@
-import { QrCode, Download, Printer } from 'lucide-react';
+import { QrCode, Download, Printer, ExternalLink } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function QrCodeCard({ asset }) {
@@ -49,9 +49,17 @@ export default function QrCodeCard({ asset }) {
                         dangerouslySetInnerHTML={{ __html: svgData }}
                     />
                 )}
-                <p className="mt-4 text-xs text-center text-slate-500">
+                <p className="mt-3 text-xs text-center text-slate-500">
                     Scan QR Code ini untuk melihat detail aset melalui portal publik.
                 </p>
+                <a
+                    href={route('public.asset', asset.uuid)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-semibold transition-colors border border-indigo-200/60 shadow-2xs"
+                >
+                    <ExternalLink size={14} /> Buka Portal Publik (Pratinjau Scan)
+                </a>
             </div>
             <div className="p-3 border-t border-slate-100 bg-slate-50 grid grid-cols-2 gap-2">
                 <button
