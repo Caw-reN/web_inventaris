@@ -67,7 +67,7 @@ export default function Index({ reports, filters }) {
             case 'open':
                 return <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full text-xs font-bold"><Clock size={12} /> Menunggu</span>;
             case 'in_progress':
-                return <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full text-xs font-bold"><Wrench size={12} /> Diprofil / Diproses</span>;
+                return <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-full text-xs font-bold"><Wrench size={12} /> Diproses</span>;
             case 'resolved':
                 return <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full text-xs font-bold"><CheckCircle2 size={12} /> Selesai</span>;
             default:
