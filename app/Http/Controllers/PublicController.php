@@ -33,7 +33,12 @@ class PublicController extends Controller
             'spesifikasi'  => $asset->spesifikasi,
             'foto'         => $asset->foto ? asset('storage/' . $asset->foto) : null,
             'category'     => $asset->category?->only(['id', 'nama']),
-            'location'     => $asset->location?->only(['id', 'nama', 'kode']),
+            'location'     => $asset->location ? [
+                'id'        => $asset->location->id,
+                'nama'      => $asset->location->nama,
+                'kode'      => $asset->location->kode,
+                'full_path' => $asset->location->full_path,
+            ] : null,
             'catatan'      => $asset->catatan,
         ];
 
