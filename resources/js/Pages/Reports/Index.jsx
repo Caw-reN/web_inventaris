@@ -83,9 +83,9 @@ export default function Index({ reports, filters }) {
                 <div className="w-full space-y-4 pb-12">
                     {/* Filter & Search Bar */}
                     <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
                             {/* Search Input */}
-                            <form onSubmit={handleSearch} className="relative w-full md:w-96">
+                            <form onSubmit={handleSearch} className="relative flex-1 min-w-[240px]">
                                 <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                 <input
                                     type="text"
@@ -97,20 +97,22 @@ export default function Index({ reports, filters }) {
                             </form>
 
                             {/* Status Filter Pills */}
-                            <div className="flex items-center gap-1.5 flex-wrap">
+                            <div className="flex items-center gap-2 shrink-0 overflow-x-auto pb-1 sm:pb-0">
                                 <button
+                                    type="button"
                                     onClick={() => handleFilterStatus('')}
-                                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                                    className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                                         statusFilter === '' 
                                             ? 'bg-slate-900 text-white shadow-xs' 
                                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                                     }`}
                                 >
-                                    Semua Laporan
+                                    Semua
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={() => handleFilterStatus('open')}
-                                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                                    className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
                                         statusFilter === 'open' 
                                             ? 'bg-amber-500 text-white shadow-xs' 
                                             : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200/60'
@@ -119,8 +121,9 @@ export default function Index({ reports, filters }) {
                                     <Clock size={13} /> Menunggu
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={() => handleFilterStatus('in_progress')}
-                                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                                    className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
                                         statusFilter === 'in_progress' 
                                             ? 'bg-blue-600 text-white shadow-xs' 
                                             : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/60'
@@ -129,8 +132,9 @@ export default function Index({ reports, filters }) {
                                     <Wrench size={13} /> Diproses
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={() => handleFilterStatus('resolved')}
-                                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                                    className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
                                         statusFilter === 'resolved' 
                                             ? 'bg-emerald-600 text-white shadow-xs' 
                                             : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/60'
