@@ -35,4 +35,34 @@ class Location extends Model
         }
         return implode(' > ', $path);
     }
+
+    /**
+     * Return all locations ordered hierarchically (parents first, then their children).
+     */
+    public static function getHierarchical()
+    {
+        $all = self::with('children')->orderBy('nama')->get();
+        $result = collect();
+
+        $traverse = function ($items) use (&$traverse, &$result) {
+            foreach ($items as $item) {
+                $result->push($item);
+                if ($item->children && $item->children->isNotEmpty()) {
+                    $traverse($item->children->sortBy('nama'));
+                }
+            }
+        };
+
+        $rootLocations = $all->whereNull('parent_id');
+        $traverse($rootLocations);
+
+        // Include any orphaned children as fallback
+        $pushedIds = $result->pluck('id')->all();
+        $orphans = $all->whereNotIn('id', $pushedIds);
+        foreach ($orphans as $orphan) {
+            $result->push($orphan);
+        }
+
+        return $result;
+    }
 }

@@ -36,7 +36,7 @@ class AssetController extends Controller
         return Inertia::render('Assets/Index', [
             'assets'     => $query->get(),
             'categories' => Category::where('tipe', 'aset')->orderBy('nama')->get(),
-            'locations'  => Location::orderBy('nama')->get(),
+            'locations'  => Location::getHierarchical(),
             'filters'    => $request->only(['search', 'status', 'category_id', 'location_id']),
         ]);
     }
@@ -45,7 +45,7 @@ class AssetController extends Controller
     {
         return Inertia::render('Assets/Create', [
             'categories' => Category::where('tipe', 'aset')->orderBy('nama')->get(),
-            'locations'  => Location::orderBy('nama')->get(),
+            'locations'  => Location::getHierarchical(),
         ]);
     }
 

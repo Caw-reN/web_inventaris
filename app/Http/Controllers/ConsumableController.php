@@ -23,7 +23,7 @@ class ConsumableController extends Controller
         return Inertia::render('Consumables/Index', [
             'consumables' => $query->paginate(15)->withQueryString(),
             'categories'  => Category::where('tipe', 'consumable')->orderBy('nama')->get(),
-            'locations'   => Location::orderBy('nama')->get(),
+            'locations'   => Location::getHierarchical(),
             'filters'     => $request->only(['search', 'category_id', 'stock_filter']),
         ]);
     }
@@ -32,7 +32,7 @@ class ConsumableController extends Controller
     {
         return Inertia::render('Consumables/Create', [
             'categories' => Category::where('tipe', 'consumable')->orderBy('nama')->get(),
-            'locations'  => Location::orderBy('nama')->get(),
+            'locations'  => Location::getHierarchical(),
         ]);
     }
 
