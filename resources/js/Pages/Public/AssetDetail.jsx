@@ -273,14 +273,16 @@ export default function AssetDetail({ asset }) {
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-xs font-semibold text-slate-700">Kelas (Opsional)</label>
+                                        <label className="text-xs font-semibold text-slate-700">Kelas <span className="text-red-500">*</span></label>
                                         <input 
                                             type="text" 
                                             value={borrowForm.data.kelas_unit} 
                                             onChange={e => borrowForm.setData('kelas_unit', e.target.value)}
+                                            required
                                             placeholder="Contoh: XII TKJ 1 / XI RPL 2..."
                                             className="w-full bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:ring-[hsl(var(--primary))] focus:border-[hsl(var(--primary))] px-3 py-2 shadow-2xs" 
                                         />
+                                        {borrowForm.errors.kelas_unit && <p className="text-red-500 text-xs mt-0.5">{borrowForm.errors.kelas_unit}</p>}
                                     </div>
 
                                     <div className="space-y-1">
@@ -364,14 +366,16 @@ export default function AssetDetail({ asset }) {
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-xs font-semibold text-slate-700">Kelas (Opsional)</label>
+                                        <label className="text-xs font-semibold text-slate-700">Kelas <span className="text-red-500">*</span></label>
                                         <input 
                                             type="text" 
                                             value={reportForm.data.kelas} 
                                             onChange={e => reportForm.setData('kelas', e.target.value)}
+                                            required
                                             placeholder="Contoh: XII TKJ 1 / XI RPL 2..."
                                             className="w-full bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:ring-[hsl(var(--primary))] focus:border-[hsl(var(--primary))] px-3 py-2 shadow-2xs" 
                                         />
+                                        {reportForm.errors.kelas && <p className="text-red-500 text-xs mt-0.5">{reportForm.errors.kelas}</p>}
                                     </div>
 
                                     <div className="space-y-1">

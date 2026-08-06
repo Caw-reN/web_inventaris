@@ -70,7 +70,7 @@ class PublicController extends Controller
 
         $validated = $request->validate([
             'nama_peminjam'  => 'required|string|max:255',
-            'kelas_unit'     => 'nullable|string|max:100',
+            'kelas_unit'     => 'required|string|max:100',
             'tenggat_waktu'   => 'nullable|date|after_or_equal:today',
             'catatan_pinjam' => 'nullable|string|max:1000',
         ]);
@@ -79,7 +79,7 @@ class PublicController extends Controller
             'asset_id'       => $asset->id,
             'user_id'        => auth()->id() ?? null,
             'nama_peminjam'  => $validated['nama_peminjam'],
-            'kelas_unit'     => $validated['kelas_unit'] ?? null,
+            'kelas_unit'     => $validated['kelas_unit'],
             'tanggal_pinjam' => now(),
             'tenggat_waktu'   => $validated['tenggat_waktu'] ?? null,
             'catatan_pinjam' => $validated['catatan_pinjam'] ?? null,
@@ -102,7 +102,7 @@ class PublicController extends Controller
 
         $validated = $request->validate([
             'nama_pelapor'     => 'required|string|max:255',
-            'kelas'            => 'nullable|string|max:100',
+            'kelas'            => 'required|string|max:100',
             'deskripsi_kendala'=> 'required|string|min:10|max:2000',
         ]);
 
