@@ -58,8 +58,8 @@ export default function QrModal({ isOpen, onClose, asset }) {
                                         <span className="font-mono text-xs">{asset.no_seri || asset.uuid}</span>
                                     </p>
                                     
-                                    <div className="flex justify-center bg-slate-50 p-6 rounded-xl border border-slate-100 mb-6 shadow-inner">
-                                        <img src={qrUrl} alt={`QR Code ${asset.nama}`} className="w-48 h-48" />
+                                    <div className="flex justify-center bg-white p-4 rounded-xl border border-slate-200 mb-6 shadow-sm">
+                                        <img src={qrUrl} alt={`QR Code ${asset.nama}`} className="w-52 h-52 object-contain" />
                                     </div>
 
                                     <div className="flex justify-center gap-3">

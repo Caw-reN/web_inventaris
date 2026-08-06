@@ -20,6 +20,7 @@ class QrCodeController extends Controller
 
         $qr = QrCode::format('svg')
             ->size(200)
+            ->margin(1)
             ->errorCorrection('M')
             ->generate($url);
 

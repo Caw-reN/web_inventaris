@@ -45,7 +45,7 @@ export default function QrCodeCard({ asset }) {
                     </div>
                 ) : (
                     <div
-                        className="w-48 h-48 border-4 border-white shadow-sm rounded-lg overflow-hidden bg-white"
+                        className="w-52 h-52 p-2.5 bg-white shadow-sm rounded-xl border border-slate-200 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full"
                         dangerouslySetInnerHTML={{ __html: svgData }}
                     />
                 )}
