@@ -119,6 +119,8 @@ export default function Index({ loans, filters, availableAssets = [], borrowers 
         },
     ];
 
+    const loanList = Array.isArray(loans) ? loans : (loans?.data || []);
+
     return (
         <AuthenticatedLayout header={<h2 className="font-semibold text-xl leading-tight">Peminjaman Aset</h2>}>
             <Head title="Peminjaman" />
@@ -181,12 +183,12 @@ export default function Index({ loans, filters, availableAssets = [], borrowers 
 
                     {/* Mobile View */}
                     <div className="md:hidden space-y-3 p-3 bg-slate-50 border-t border-slate-100">
-                        {(!loans || !loans.data || loans.data.length === 0) ? (
+                        {loanList.length === 0 ? (
                             <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500 text-sm">
                                 Belum ada data peminjaman
                             </div>
                         ) : (
-                            loans.data.map(loan => (
+                            loanList.map(loan => (
                                 <div key={loan.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 space-y-3">
                                     <div className="flex justify-between items-start gap-2">
                                         <div>
