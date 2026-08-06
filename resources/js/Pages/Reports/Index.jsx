@@ -275,17 +275,68 @@ export default function Index({ reports, filters }) {
                                 </div>
 
                                 <form onSubmit={handleUpdateStatus} className="space-y-4">
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-semibold text-slate-700">Status Penanganan <span className="text-red-500">*</span></label>
-                                        <select
-                                            value={editStatus}
-                                            onChange={(e) => setEditStatus(e.target.value)}
-                                            className="w-full bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-[hsl(var(--primary))] px-3 py-2 font-medium"
-                                        >
-                                            <option value="open">⏳ Menunggu (Open)</option>
-                                            <option value="in_progress">⚙️ Sedang Diproses (In Progress)</option>
-                                            <option value="resolved">✅ Selesai Ditangani (Resolved)</option>
-                                        </select>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                                            Status Penanganan <span className="text-red-500">*</span>
+                                        </label>
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                            <button
+                                                type="button"
+                                                onClick={() => setEditStatus('open')}
+                                                className={`flex flex-col p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                                                    editStatus === 'open'
+                                                        ? 'border-amber-400 bg-amber-50/80 text-amber-900 ring-2 ring-amber-400/20'
+                                                        : 'border-slate-200 bg-slate-50/60 hover:bg-slate-100 text-slate-700'
+                                                }`}
+                                            >
+                                                <div className="flex items-center justify-between w-full mb-1.5">
+                                                    <div className={`p-1.5 rounded-lg ${editStatus === 'open' ? 'bg-amber-100 text-amber-700' : 'bg-slate-200/80 text-slate-500'}`}>
+                                                        <Clock size={16} />
+                                                    </div>
+                                                    {editStatus === 'open' && <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />}
+                                                </div>
+                                                <span className="font-bold text-xs">Menunggu</span>
+                                                <span className="text-[10px] text-slate-500 mt-0.5">Belum ditangani</span>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => setEditStatus('in_progress')}
+                                                className={`flex flex-col p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                                                    editStatus === 'in_progress'
+                                                        ? 'border-blue-500 bg-blue-50/80 text-blue-900 ring-2 ring-blue-500/20'
+                                                        : 'border-slate-200 bg-slate-50/60 hover:bg-slate-100 text-slate-700'
+                                                }`}
+                                            >
+                                                <div className="flex items-center justify-between w-full mb-1.5">
+                                                    <div className={`p-1.5 rounded-lg ${editStatus === 'in_progress' ? 'bg-blue-100 text-blue-700' : 'bg-slate-200/80 text-slate-500'}`}>
+                                                        <Wrench size={16} />
+                                                    </div>
+                                                    {editStatus === 'in_progress' && <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0" />}
+                                                </div>
+                                                <span className="font-bold text-xs">Sedang Diproses</span>
+                                                <span className="text-[10px] text-slate-500 mt-0.5">Teknisi memperbaiki</span>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => setEditStatus('resolved')}
+                                                className={`flex flex-col p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                                                    editStatus === 'resolved'
+                                                        ? 'border-emerald-500 bg-emerald-50/80 text-emerald-900 ring-2 ring-emerald-500/20'
+                                                        : 'border-slate-200 bg-slate-50/60 hover:bg-slate-100 text-slate-700'
+                                                }`}
+                                            >
+                                                <div className="flex items-center justify-between w-full mb-1.5">
+                                                    <div className={`p-1.5 rounded-lg ${editStatus === 'resolved' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200/80 text-slate-500'}`}>
+                                                        <CheckCircle2 size={16} />
+                                                    </div>
+                                                    {editStatus === 'resolved' && <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />}
+                                                </div>
+                                                <span className="font-bold text-xs">Selesai Ditangani</span>
+                                                <span className="text-[10px] text-slate-500 mt-0.5">Perbaikan tuntas</span>
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <div className="space-y-1">
@@ -295,7 +346,7 @@ export default function Index({ reports, filters }) {
                                             value={catatanTeknisi}
                                             onChange={(e) => setCatatanTeknisi(e.target.value)}
                                             placeholder="Jelaskan tindakan perbaikan yang dilakukan..."
-                                            className="w-full bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-[hsl(var(--primary))] px-3 py-2"
+                                            className="w-full bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-sm focus:ring-[hsl(var(--primary))] px-3 py-2 shadow-2xs"
                                         />
                                     </div>
 
