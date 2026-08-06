@@ -7,7 +7,7 @@ import StatusBadge from '@/Components/StatusBadge';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import CreateModal from './CreateModal';
 import QrModal from './QrModal';
-import { Plus, Search, Filter, Trash2, Edit, Eye, X, Printer, QrCode } from 'lucide-react';
+import { Plus, Search, Filter, Trash2, Edit, Eye, X, Printer, QrCode, ChevronDown, ChevronRight } from 'lucide-react';
 
 export default function Index({ assets, categories, locations, filters }) {
     const [search, setSearch] = useState(filters.search || '');
@@ -18,6 +18,14 @@ export default function Index({ assets, categories, locations, filters }) {
     const [qrModal, setQrModal] = useState({ isOpen: false, asset: null });
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [showMobileFilters, setShowMobileFilters] = useState(false);
+    const [expandedMobileGroups, setExpandedMobileGroups] = useState(new Set());
+
+    const toggleMobileGroup = (key) => {
+        const newSet = new Set(expandedMobileGroups);
+        if (newSet.has(key)) newSet.delete(key);
+        else newSet.add(key);
+        setExpandedMobileGroups(newSet);
+    };
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -110,19 +118,20 @@ export default function Index({ assets, categories, locations, filters }) {
         { header: 'Status', accessor: 'status', cell: row => <StatusBadge status={row.status} label={row.status_label} /> },
         {
             header: 'Aksi',
-            cellClassName: 'text-right',
+            headerClassName: 'text-center w-36',
+            cellClassName: 'text-center w-36',
             cell: (row) => (
-                <div className="flex items-center justify-end gap-2">
-                    <button onClick={() => setQrModal({ isOpen: true, asset: row })} className="p-1.5 text-slate-600 hover:bg-slate-100 rounded" title="Lihat QR Code">
+                <div className="flex items-center justify-center gap-1">
+                    <button onClick={() => setQrModal({ isOpen: true, asset: row })} className="p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" title="Lihat QR Code">
                         <QrCode size={16} />
                     </button>
-                    <Link href={route('assets.show', row.id)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded" title="Detail">
+                    <Link href={route('assets.show', row.id)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Detail">
                         <Eye size={16} />
                     </Link>
-                    <Link href={route('assets.edit', row.id)} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded" title="Edit">
+                    <Link href={route('assets.edit', row.id)} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
                         <Edit size={16} />
                     </Link>
-                    <button onClick={() => setDeleteModal({ isOpen: true, asset: row })} className="p-1.5 text-red-600 hover:bg-red-50 rounded" title="Hapus">
+                    <button onClick={() => setDeleteModal({ isOpen: true, asset: row })} className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer" title="Hapus">
                         <Trash2 size={16} />
                     </button>
                 </div>
@@ -197,49 +206,177 @@ export default function Index({ assets, categories, locations, filters }) {
                         </button>
                     </div>
 
-                    <DataTable 
-                        columns={columns} 
-                        data={assets} 
-                        groupBy={[
-                            (row) => row.category?.nama || 'Tanpa Kategori',
-                            (row) => row.nama.replace(/\s-\s\d+$/, '')
-                        ]}
-                        groupHeader={(key, items, depth) => {
-                            if (depth === 0) {
+                    {/* Desktop View */}
+                    <div className="hidden md:block">
+                        <DataTable 
+                            columns={columns} 
+                            data={assets} 
+                            groupBy={[
+                                (row) => row.category?.nama || 'Tanpa Kategori',
+                                (row) => row.nama.replace(/\s-\s\d+$/, '')
+                            ]}
+                            groupHeader={(key, items, depth) => {
+                                if (depth === 0) {
+                                    return (
+                                        <div className="flex items-center gap-2 py-0.5">
+                                            <span className="font-bold text-[14px] text-slate-800 uppercase tracking-wider">{key}</span>
+                                            <span className="bg-slate-200 text-slate-700 text-[10px] px-2.5 py-0.5 rounded-full font-bold">
+                                                {items.length} Aset
+                                            </span>
+                                        </div>
+                                    );
+                                }
                                 return (
-                                    <div className="flex items-center gap-2 py-0.5">
-                                        <span className="font-bold text-[14px] text-slate-800 uppercase tracking-wider">{key}</span>
-                                        <span className="bg-slate-200 text-slate-700 text-[10px] px-2.5 py-0.5 rounded-full font-bold">
-                                            {items.length} Aset
+                                    <div className="flex items-center gap-1.5 py-0.5">
+                                        <span className="font-semibold text-[13px] text-slate-700">{key}</span>
+                                        <span className="bg-[hsl(var(--primary))] text-white text-[10px] px-2 py-0.5 rounded-full font-semibold">
+                                            {items.length} Item
                                         </span>
                                     </div>
                                 );
-                            }
-                            return (
-                                <div className="flex items-center gap-1.5 py-0.5">
-                                    <span className="font-semibold text-[13px] text-slate-700">{key}</span>
-                                    <span className="bg-[hsl(var(--primary))] text-white text-[10px] px-2 py-0.5 rounded-full font-semibold">
-                                        {items.length} Item
-                                    </span>
+                            }}
+                            groupByAction={(key, items, depth) => (
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handlePrintGroup(items);
+                                        }}
+                                        className="flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 text-slate-700 rounded-md text-xs font-semibold hover:bg-slate-50 transition-colors shadow-sm"
+                                        title={`Print QR Code untuk semua ${key}`}
+                                    >
+                                        <Printer size={14} className="text-slate-500" />
+                                        <span className="hidden sm:inline">Print QR</span>
+                                    </button>
                                 </div>
-                            );
-                        }}
-                        groupByAction={(key, items, depth) => (
-                            <div className="flex justify-end">
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handlePrintGroup(items);
-                                    }}
-                                    className="flex items-center gap-1.5 px-3 py-1 bg-white border border-slate-200 text-slate-700 rounded-md text-xs font-semibold hover:bg-slate-50 transition-colors shadow-sm"
-                                    title={`Print QR Code untuk semua ${key}`}
-                                >
-                                    <Printer size={14} className="text-slate-500" />
-                                    <span className="hidden sm:inline">Print QR</span>
-                                </button>
+                            )}
+                        />
+                    </div>
+
+                    {/* Mobile View (Revamped UI) */}
+                    <div className="md:hidden">
+                        {!assets || assets.length === 0 ? (
+                            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center mt-4">
+                                <p className="text-slate-500 text-sm">Tidak ada data aset yang ditemukan.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-6 pb-6 mt-2">
+                                {Object.entries(
+                                    assets.reduce((acc, item) => {
+                                        const category = item.category?.nama || 'Tanpa Kategori';
+                                        const baseName = item.nama.replace(/\s-\s\d+$/, '');
+                                        if (!acc[category]) acc[category] = {};
+                                        if (!acc[category][baseName]) acc[category][baseName] = [];
+                                        acc[category][baseName].push(item);
+                                        return acc;
+                                    }, {})
+                                ).map(([category, baseGroups]) => (
+                                    <div key={category} className="space-y-4">
+                                        {/* Category Header */}
+                                        <div className="sticky top-0 z-20 bg-slate-100/95 backdrop-blur-sm px-4 py-2.5 -mx-4 flex items-center justify-between border-y border-slate-200 shadow-sm">
+                                            <span className="font-bold text-sm text-slate-800 uppercase tracking-wider">{category}</span>
+                                            <span className="bg-slate-300 text-slate-700 text-[10px] px-2.5 py-0.5 rounded-full font-bold">
+                                                {Object.values(baseGroups).flat().length} Aset
+                                            </span>
+                                        </div>
+                                        
+                                        <div className="px-1 space-y-3">
+                                            {Object.entries(baseGroups).map(([baseName, items]) => {
+                                                const groupKey = `${category}-${baseName}`;
+                                                const isExpanded = expandedMobileGroups.has(groupKey);
+                                                
+                                                return (
+                                                <div key={baseName} className={`relative before:content-[''] before:absolute before:left-0 before:top-6 before:bottom-0 before:w-0.5 before:bg-[hsl(var(--primary)/0.2)] pl-3 ${isExpanded ? 'pb-3' : ''}`}>
+                                                    {/* Base Name Header (Clickable) */}
+                                                    <div 
+                                                        onClick={() => toggleMobileGroup(groupKey)}
+                                                        className="flex items-center justify-between py-2 cursor-pointer select-none"
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="absolute left-[-3px] top-[14px] w-2 h-2 rounded-full bg-[hsl(var(--primary))]"></div>
+                                                            {isExpanded ? (
+                                                                <ChevronDown size={16} className="text-slate-500" />
+                                                            ) : (
+                                                                <ChevronRight size={16} className="text-slate-400" />
+                                                            )}
+                                                            <span className="font-semibold text-slate-700 text-sm">{baseName}</span>
+                                                            <span className="bg-[hsl(var(--primary))] text-white text-[10px] px-2 py-0.5 rounded-full font-semibold">
+                                                                {items.length} Item
+                                                            </span>
+                                                        </div>
+                                                        <button 
+                                                            onClick={(e) => { e.stopPropagation(); handlePrintGroup(items); }}
+                                                            className="flex items-center gap-1 p-1 px-2 text-slate-600 bg-white border border-slate-200 rounded text-[10px] font-semibold hover:bg-slate-50 transition-colors shadow-sm"
+                                                            title={`Print QR Code untuk semua ${baseName}`}
+                                                        >
+                                                            <Printer size={12} /> Print QR
+                                                        </button>
+                                                    </div>
+                                                    
+                                                    {/* Asset Cards (Collapsible) */}
+                                                    {isExpanded && (
+                                                        <div className="space-y-3 mt-2">
+                                                            {items.map(item => (
+                                                            <div key={item.id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col relative ml-1">
+                                                                {/* Card Header */}
+                                                                <div className="p-4 border-b border-slate-100 flex flex-col gap-3">
+                                                                    <div className="flex justify-between items-start gap-2">
+                                                                        <div>
+                                                                            <h3 className="font-semibold text-slate-900 leading-tight mb-1">{item.nama}</h3>
+                                                                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] tracking-wider border border-[hsl(var(--primary)/0.2)]">
+                                                                                {item.nomor_inventaris || 'BELUM ADA NO. INV'}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div className="shrink-0 flex flex-col items-end gap-1.5">
+                                                                            <StatusBadge status={item.status} label={item.status_label} />
+                                                                            <button onClick={() => setQrModal({ isOpen: true, asset: item })} className="p-1.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg transition-colors shadow-sm mt-1 flex items-center gap-1">
+                                                                                <QrCode size={14} /> <span className="text-[10px] font-semibold uppercase">QR</span>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    {/* Details Grid */}
+                                                                    <div className="grid grid-cols-2 gap-y-2 gap-x-4 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                                                                        <div>
+                                                                            <div className="text-[9px] text-slate-400 uppercase font-semibold">Lokasi</div>
+                                                                            <div className="text-xs text-slate-700 font-medium truncate">{item.location?.nama || '-'}</div>
+                                                                        </div>
+                                                                        <div>
+                                                                            <div className="text-[9px] text-slate-400 uppercase font-semibold">Merk</div>
+                                                                            <div className="text-xs text-slate-700 font-medium truncate">{item.merk || '-'}</div>
+                                                                        </div>
+                                                                        <div className="col-span-2">
+                                                                            <div className="text-[9px] text-slate-400 uppercase font-semibold">Serial Number</div>
+                                                                            <div className="text-xs text-slate-700 font-mono tracking-tight truncate">{item.no_seri || '-'}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                {/* Card Actions */}
+                                                                <div className="p-3 flex items-center gap-2">
+                                                                    <Link href={route('assets.show', item.id)} className="flex-1 flex justify-center items-center gap-1.5 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg text-sm font-medium transition-colors">
+                                                                        <Eye size={16} /> Detail
+                                                                    </Link>
+                                                                    <Link href={route('assets.edit', item.id)} className="flex-1 flex justify-center items-center gap-1.5 py-2 text-amber-600 bg-amber-50 hover:bg-amber-100 rounded-lg text-sm font-medium transition-colors">
+                                                                        <Edit size={16} /> Edit
+                                                                    </Link>
+                                                                    <button onClick={() => setDeleteModal({ isOpen: true, asset: item })} className="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors shrink-0">
+                                                                        <Trash2 size={16} />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         )}
-                    />
+                    </div>
 
                 </div>
             </PageTransition>

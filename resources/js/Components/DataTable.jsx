@@ -79,7 +79,7 @@ export default function DataTable({ data, columns, pagination = true, groupBy, g
                     <thead className="sticky top-0 z-10">
                         <tr className="border-b border-slate-200">
                             {columns.map((col, i) => (
-                                <th key={i} className={`bg-slate-50/95 backdrop-blur-sm px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider ${col.className || ''}`}>
+                                <th key={i} className={`bg-slate-50/95 backdrop-blur-sm px-4 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wider ${col.headerClassName || col.cellClassName || col.className || ''}`}>
                                     {col.header}
                                 </th>
                             ))}

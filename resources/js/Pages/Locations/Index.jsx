@@ -77,13 +77,14 @@ export default function Index({ locations }) {
         { header: 'Deskripsi', accessor: 'deskripsi', cell: row => <span className="text-slate-500">{row.deskripsi || '-'}</span> },
         {
             header: 'Aksi',
-            cellClassName: 'text-right',
+            headerClassName: 'text-center w-28',
+            cellClassName: 'text-center w-28',
             cell: (row) => (
-                <div className="flex items-center justify-end gap-2">
-                    <button onClick={(e) => { e.stopPropagation(); openEditModal(row); }} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded" title="Edit">
+                <div className="flex items-center justify-center gap-1">
+                    <button onClick={(e) => { e.stopPropagation(); openEditModal(row); }} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer" title="Edit">
                         <Edit size={16} />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); setDeleteModal({ isOpen: true, item: row }); }} className="p-1.5 text-red-600 hover:bg-red-50 rounded" title="Hapus">
+                    <button onClick={(e) => { e.stopPropagation(); setDeleteModal({ isOpen: true, item: row }); }} className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer" title="Hapus">
                         <Trash2 size={16} />
                     </button>
                 </div>
@@ -121,12 +122,68 @@ export default function Index({ locations }) {
                         </button>
                     </div>
 
-                    <DataTable 
-                        columns={columns} 
-                        data={locationTree} 
-                        pagination={false} 
-                        subItemsKey="children"
-                    />
+                    {/* Desktop View */}
+                    <div className="hidden md:block">
+                        <DataTable 
+                            columns={columns} 
+                            data={locationTree} 
+                            pagination={false} 
+                            subItemsKey="children"
+                        />
+                    </div>
+
+                    {/* Mobile View */}
+                    <div className="md:hidden space-y-3">
+                        {(!locationTree || locationTree.length === 0) ? (
+                            <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500 text-sm">
+                                Belum ada data lokasi.
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {locationTree.map(loc => (
+                                    <div key={loc.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 space-y-2">
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
+                                                <MapPin size={16} className="text-[hsl(var(--primary))]" />
+                                                {loc.nama}
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <button onClick={(e) => { e.stopPropagation(); openEditModal(loc); }} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg">
+                                                    <Edit size={16} />
+                                                </button>
+                                                <button onClick={(e) => { e.stopPropagation(); setDeleteModal({ isOpen: true, item: loc }); }} className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg">
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        {loc.deskripsi && <p className="text-xs text-slate-500 pl-6">{loc.deskripsi}</p>}
+
+                                        {loc.children && loc.children.length > 0 && (
+                                            <div className="pl-3 mt-2 pt-2 border-t border-slate-100 space-y-2">
+                                                {loc.children.map(child => (
+                                                    <div key={child.id} className="flex items-center justify-between bg-slate-50 p-2.5 rounded-lg border border-slate-200/60">
+                                                        <div className="flex items-center gap-2 font-medium text-slate-800 text-xs">
+                                                            <div className="w-2.5 h-2.5 border-b-2 border-l-2 border-slate-400 rounded-bl shrink-0 -mt-1" />
+                                                            <MapPin size={14} className="text-slate-400 shrink-0" />
+                                                            <span className="truncate">{child.nama}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-1 shrink-0">
+                                                            <button onClick={(e) => { e.stopPropagation(); openEditModal(child); }} className="p-1 text-amber-600 hover:bg-amber-100 rounded">
+                                                                <Edit size={14} />
+                                                            </button>
+                                                            <button onClick={(e) => { e.stopPropagation(); setDeleteModal({ isOpen: true, item: child }); }} className="p-1 text-red-600 hover:bg-red-100 rounded">
+                                                                <Trash2 size={14} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </PageTransition>
 

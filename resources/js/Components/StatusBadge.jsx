@@ -34,6 +34,11 @@ export default function StatusBadge({ status, label, className }) {
     if (status === 'in_progress') variant = 'warning';
     if (status === 'resolved') variant = 'success';
 
+    // Mapping untuk status Peminjaman
+    if (status === 'dipinjam') variant = 'warning';
+    if (status === 'dikembalikan') variant = 'success';
+    if (status === 'terlambat') variant = 'danger';
+
     return (
         <span className={cn(badgeVariants({ variant }), className)}>
             {label || status}

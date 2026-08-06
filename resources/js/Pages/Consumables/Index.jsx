@@ -4,15 +4,19 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PageTransition from '@/Components/PageTransition';
 import DataTable from '@/Components/DataTable';
 import ConfirmDialog from '@/Components/ConfirmDialog';
-import { Plus, Search, Trash2, Edit, Eye, X, AlertTriangle } from 'lucide-react';
+import CreateModal from './CreateModal';
+import UseModal from './UseModal';
+import { Plus, Search, Trash2, Edit, Eye, X, AlertTriangle, PackageMinus } from 'lucide-react';
 
-export default function Index({ consumables, categories, filters }) {
+export default function Index({ consumables, categories, locations, filters }) {
     // Pastikan filters selalu object karena PHP [] (kosong) menjadi Array JS
     const safeFilters = Array.isArray(filters) ? {} : (filters || {});
     const [search, setSearch] = useState(safeFilters.search || '');
     const [categoryFilter, setCategoryFilter] = useState(safeFilters.category_id || '');
     const [stockFilter, setStockFilter] = useState(safeFilters.stock_filter || '');
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, item: null });
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [selectedItemForUse, setSelectedItemForUse] = useState(null);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -58,6 +62,15 @@ export default function Index({ consumables, categories, filters }) {
                 </span>
             ) : <span className="text-slate-400">-</span> 
         },
+        { 
+            header: 'Lokasi', 
+            accessor: 'location', 
+            cell: row => row.location?.nama ? (
+                <span className="inline-flex items-center text-xs text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
+                    {row.location.full_path || row.location.nama}
+                </span>
+            ) : <span className="text-slate-400 text-xs italic">Belum diset</span> 
+        },
         {
             header: 'Stok Saat Ini',
             accessor: 'stok',
@@ -70,18 +83,33 @@ export default function Index({ consumables, categories, filters }) {
         { header: 'Stok Min.', accessor: 'stok_minimum' },
         {
             header: 'Aksi',
-            cellClassName: 'text-right',
+            headerClassName: 'text-center w-52',
+            cellClassName: 'text-center w-52',
             cell: (row) => (
-                <div className="flex items-center justify-end gap-2">
-                    <Link href={route('consumables.show', row.id)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded" title="Kelola Stok (In/Out)">
-                        <Eye size={16} />
-                    </Link>
-                    <Link href={route('consumables.edit', row.id)} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded" title="Edit">
-                        <Edit size={16} />
-                    </Link>
-                    <button onClick={() => setDeleteModal({ isOpen: true, item: row })} className="p-1.5 text-red-600 hover:bg-red-50 rounded" title="Hapus">
-                        <Trash2 size={16} />
+                <div className="flex items-center justify-center gap-1">
+                    {/* Fungsi Utama: Tombol Gunakan Berwarna Menonjol */}
+                    <button
+                        type="button"
+                        onClick={() => setSelectedItemForUse(row)}
+                        disabled={row.stok <= 0}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[hsl(var(--primary))] hover:opacity-90 text-white rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-xs disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:cursor-not-allowed"
+                        title={row.stok > 0 ? "Catat Pemakaian Stok" : "Stok Habis"}
+                    >
+                        <PackageMinus size={14} /> Gunakan
                     </button>
+
+                    {/* Fungsi Sekunder: Ikon Minimalis Pengaturan Data Master */}
+                    <div className="flex items-center ml-1 border-l border-slate-200 pl-1 gap-0.5">
+                        <Link href={route('consumables.show', row.id)} className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors" title="Riwayat Transaksi & Detail">
+                            <Eye size={15} />
+                        </Link>
+                        <Link href={route('consumables.edit', row.id)} className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-md transition-colors" title="Edit Data Master">
+                            <Edit size={15} />
+                        </Link>
+                        <button onClick={() => setDeleteModal({ isOpen: true, item: row })} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer" title="Hapus Item">
+                            <Trash2 size={15} />
+                        </button>
+                    </div>
                 </div>
             )
         }
@@ -128,15 +156,116 @@ export default function Index({ consumables, categories, filters }) {
                             )}
                         </form>
 
-                        <Link
-                            href={route('consumables.create')}
-                            className="flex items-center gap-2 bg-[hsl(var(--primary))] text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 whitespace-nowrap"
+                        <button
+                            type="button"
+                            onClick={() => setShowCreateModal(true)}
+                            className="flex items-center gap-2 bg-[hsl(var(--primary))] text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 whitespace-nowrap shadow-xs cursor-pointer"
                         >
                             <Plus size={16} /> Tambah Item
-                        </Link>
+                        </button>
                     </div>
 
-                    <DataTable columns={columns} data={consumables} />
+                    {/* Desktop View */}
+                    <div className="hidden md:block">
+                        <DataTable columns={columns} data={consumables} />
+                    </div>
+
+                    {/* Mobile View (Revamped UI) */}
+                    <div className="md:hidden space-y-4">
+                        {consumables.data.length === 0 ? (
+                            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center">
+                                <p className="text-slate-500 text-sm">Tidak ada data yang ditemukan.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {consumables.data.map(item => (
+                                    <div key={item.id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                                        {/* Card Header */}
+                                        <div className="p-4 border-b border-slate-100 flex justify-between items-start gap-3">
+                                            <div>
+                                                <h3 className="font-semibold text-slate-900 flex items-center gap-2">
+                                                    {item.nama}
+                                                    {item.stok <= item.stok_minimum && (
+                                                        <span className="flex items-center text-[10px] font-bold text-red-600 bg-red-100 px-1.5 py-0.5 rounded uppercase" title="Stok Menipis">
+                                                            <AlertTriangle size={10} className="mr-0.5" /> Low
+                                                        </span>
+                                                    )}
+                                                </h3>
+                                                <div className="flex flex-wrap items-center gap-2 mt-2">
+                                                    {item.category?.nama ? (
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-200/60">
+                                                            {item.category.nama}
+                                                        </span>
+                                                    ) : <span className="text-slate-400 text-[10px]">-</span>}
+                                                    
+                                                    {item.location?.nama ? (
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] text-slate-600 bg-slate-100">
+                                                            {item.location.full_path || item.location.nama}
+                                                        </span>
+                                                    ) : <span className="text-slate-400 text-[10px] italic">Lokasi: -</span>}
+                                                </div>
+                                            </div>
+                                            <div className="text-right shrink-0">
+                                                <div className="text-[10px] text-slate-500 uppercase font-semibold mb-0.5">Stok Saat Ini</div>
+                                                <div className={`text-lg font-bold ${item.stok <= item.stok_minimum ? 'text-red-600' : 'text-slate-800'}`}>
+                                                    {item.stok} <span className="text-xs font-normal text-slate-500">{item.satuan}</span>
+                                                </div>
+                                                <div className="text-[10px] text-slate-400 mt-0.5">Min: {item.stok_minimum}</div>
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Card Actions */}
+                                        <div className="p-3 bg-slate-50 flex items-center justify-between gap-3">
+                                            {/* Primary Action */}
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedItemForUse(item)}
+                                                disabled={item.stok <= 0}
+                                                className="flex-1 flex justify-center items-center gap-1.5 px-3 py-2 bg-[hsl(var(--primary))] hover:opacity-90 text-white rounded-lg text-sm font-semibold transition-all shadow-sm disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
+                                            >
+                                                <PackageMinus size={16} /> Gunakan
+                                            </button>
+                                            
+                                            {/* Secondary Actions */}
+                                            <div className="flex items-center gap-1">
+                                                <Link href={route('consumables.show', item.id)} className="p-2 text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors shadow-sm">
+                                                    <Eye size={16} />
+                                                </Link>
+                                                <Link href={route('consumables.edit', item.id)} className="p-2 text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors shadow-sm">
+                                                    <Edit size={16} />
+                                                </Link>
+                                                <button onClick={() => setDeleteModal({ isOpen: true, item })} className="p-2 text-slate-400 hover:text-red-600 bg-white hover:bg-red-50 border border-slate-200 rounded-lg transition-colors shadow-sm">
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        
+                        {/* Mobile Pagination */}
+                        {consumables.links && consumables.links.length > 3 && (
+                            <div className="flex justify-center flex-wrap gap-1 mt-4 pb-4">
+                                {consumables.links.map((link, i) => {
+                                    let label = link.label;
+                                    if (label.includes('Previous')) label = '«';
+                                    if (label.includes('Next')) label = '»';
+                                    
+                                    return link.url ? (
+                                        <Link
+                                            key={i}
+                                            href={link.url}
+                                            className={`px-3 py-1.5 border rounded-lg text-sm font-medium transition-colors ${link.active ? 'bg-[hsl(var(--primary))] text-white border-[hsl(var(--primary))]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
+                                            dangerouslySetInnerHTML={{ __html: label }}
+                                        />
+                                    ) : (
+                                        <span key={i} className="px-3 py-1.5 border border-slate-200 rounded-lg text-sm font-medium text-slate-400 bg-slate-50" dangerouslySetInnerHTML={{ __html: label }} />
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </PageTransition>
 
@@ -146,6 +275,19 @@ export default function Index({ consumables, categories, filters }) {
                 onConfirm={handleDelete}
                 title="Hapus Consumable"
                 description={`Apakah Anda yakin ingin menghapus item "${deleteModal.item?.nama}"? Tindakan ini tidak dapat dibatalkan dan akan menghapus riwayat transaksinya juga.`}
+            />
+
+            <CreateModal
+                show={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                categories={categories}
+                locations={locations}
+            />
+
+            <UseModal
+                item={selectedItemForUse}
+                show={!!selectedItemForUse}
+                onClose={() => setSelectedItemForUse(null)}
             />
         </AuthenticatedLayout>
     );

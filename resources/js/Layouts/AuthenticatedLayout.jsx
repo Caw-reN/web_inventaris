@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard, Package, MapPin, Tag, FileWarning,
     Settings, Users, LogOut, Menu, Bell,
-    ChevronRight, Cpu, Building2, FolderClosed, Warehouse, ShieldCheck, ScanLine
+    ChevronRight, Cpu, Building2, FolderClosed, Warehouse, ShieldCheck, ScanLine, MoreHorizontal, X
 } from 'lucide-react';
 
 // ─── Static nav data ────────────────────────────────────────────────────────
@@ -154,14 +154,8 @@ function LocationItem({ loc, collapsed, isAssetsPage, activeLocationId }) {
         return isParentActive || isAnyChildActive;
     });
 
-    useEffect(() => {
-        if (isParentActive || isAnyChildActive) {
-            setOpen(true);
-            localStorage.setItem(storageKey, 'true');
-        }
-    }, [isParentActive, isAnyChildActive, storageKey]);
-
-    const handleParentClick = () => {
+    const toggleOpen = (e) => {
+        e.stopPropagation();
         if (hasChildren && !collapsed) {
             setOpen(prev => {
                 const next = !prev;
@@ -169,36 +163,47 @@ function LocationItem({ loc, collapsed, isAssetsPage, activeLocationId }) {
                 return next;
             });
         }
+    };
+
+    const handleParentClick = () => {
         router.get('/assets', { location_id: loc.id }, { preserveState: false });
     };
 
     return (
         <div>
-            <button
-                onClick={handleParentClick}
+            <div
                 title={loc.nama}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors
                     ${isParentActive || isAnyChildActive
                         ? 'bg-[hsl(var(--primary)/0.08)] text-[hsl(var(--primary))]'
                         : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                     } ${collapsed ? 'justify-center' : ''}`}
             >
-                <Warehouse
-                    size={18}
-                    className={`flex-shrink-0 ${isParentActive || isAnyChildActive ? 'text-[hsl(var(--primary))]' : 'text-slate-400'}`}
-                />
-                {!collapsed && (
-                    <>
-                        <span className="flex-1 text-left truncate">{loc.nama}</span>
-                        {hasChildren && (
-                            <ChevronRight
-                                size={14}
-                                className={`flex-shrink-0 text-slate-400 transition-transform duration-200 ${open ? 'rotate-90' : ''}`}
-                            />
-                        )}
-                    </>
+                <div 
+                    onClick={handleParentClick}
+                    className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer"
+                >
+                    <Warehouse
+                        size={18}
+                        className={`flex-shrink-0 ${isParentActive || isAnyChildActive ? 'text-[hsl(var(--primary))]' : 'text-slate-400'}`}
+                    />
+                    {!collapsed && <span className="flex-1 text-left truncate">{loc.nama}</span>}
+                </div>
+
+                {hasChildren && !collapsed && (
+                    <button
+                        type="button"
+                        onClick={toggleOpen}
+                        className="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-200/60 transition-colors"
+                        title={open ? "Tutup Sub-lokasi" : "Buka Sub-lokasi"}
+                    >
+                        <ChevronRight
+                            size={14}
+                            className={`flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-90' : ''}`}
+                        />
+                    </button>
                 )}
-            </button>
+            </div>
 
             {hasChildren && !collapsed && (
                 <AnimatePresence initial={false}>
@@ -396,7 +401,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
             </motion.aside>
 
-            {/* Sidebar Mobile Overlay */}
+            {/* Mobile Bottom Sheet Menu (Lainnya) */}
             <AnimatePresence>
                 {mobileOpen && (
                     <>
@@ -405,17 +410,129 @@ export default function AuthenticatedLayout({ header, children }) {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setMobileOpen(false)}
-                            className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden"
+                            className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm lg:hidden"
                         />
-                        <motion.aside
-                            initial={{ x: -256 }}
-                            animate={{ x: 0 }}
-                            exit={{ x: -256 }}
-                            transition={{ duration: 0.25, ease: 'easeInOut' }}
-                            className="fixed inset-y-0 left-0 z-50 w-64 lg:hidden bg-white shadow-xl"
+                        <motion.div
+                            initial={{ y: '100%' }}
+                            animate={{ y: 0 }}
+                            exit={{ y: '100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl p-4 pb-20 max-h-[85vh] overflow-y-auto lg:hidden"
                         >
-                            <SidebarContent collapsed={false} {...sidebarProps} />
-                        </motion.aside>
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-[hsl(var(--primary))]"></div>
+                                    <h3 className="font-bold text-slate-800 text-base">Menu Lainnya</h3>
+                                </div>
+                                <button onClick={() => setMobileOpen(false)} className="p-1 text-slate-400 hover:text-slate-600 rounded-lg bg-slate-100">
+                                    <X size={18} />
+                                </button>
+                            </div>
+                            
+                            <div className="space-y-5">
+                                {/* Navigasi Utama & Transaksi */}
+                                <div>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Navigasi Utama</p>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <Link
+                                            href="/loans"
+                                            onClick={() => setMobileOpen(false)}
+                                            className={`flex items-center gap-2.5 p-3 rounded-xl border text-sm font-medium transition-colors ${currentUrl.startsWith('/loans') ? 'bg-[hsl(var(--primary)/0.08)] border-[hsl(var(--primary)/0.3)] text-[hsl(var(--primary))]' : 'bg-slate-50 border-slate-200/60 text-slate-700'}`}
+                                        >
+                                            <Warehouse size={18} className={currentUrl.startsWith('/loans') ? 'text-[hsl(var(--primary))]' : 'text-slate-500'} />
+                                            <span>Peminjaman</span>
+                                        </Link>
+                                        <Link
+                                            href="/reports"
+                                            onClick={() => setMobileOpen(false)}
+                                            className={`flex items-center gap-2.5 p-3 rounded-xl border text-sm font-medium transition-colors ${currentUrl.startsWith('/reports') ? 'bg-[hsl(var(--primary)/0.08)] border-[hsl(var(--primary)/0.3)] text-[hsl(var(--primary))]' : 'bg-slate-50 border-slate-200/60 text-slate-700'}`}
+                                        >
+                                            <FileWarning size={18} className={currentUrl.startsWith('/reports') ? 'text-[hsl(var(--primary))]' : 'text-slate-500'} />
+                                            <span>Laporan Kendala</span>
+                                        </Link>
+                                    </div>
+                                </div>
+
+                                {/* Master Data */}
+                                <div>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Master Data</p>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {masterDataItems.map(item => (
+                                            <Link
+                                                key={item.href}
+                                                href={item.href}
+                                                onClick={() => setMobileOpen(false)}
+                                                className={`flex items-center gap-2.5 p-3 rounded-xl border text-sm font-medium transition-colors ${currentUrl.startsWith(item.href) ? 'bg-[hsl(var(--primary)/0.08)] border-[hsl(var(--primary)/0.3)] text-[hsl(var(--primary))]' : 'bg-slate-50 border-slate-200/60 text-slate-700'}`}
+                                            >
+                                                <item.icon size={18} className={currentUrl.startsWith(item.href) ? 'text-[hsl(var(--primary))]' : 'text-slate-500'} />
+                                                <span>{item.label}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Quick Location Filter */}
+                                {sidebarLocations && sidebarLocations.length > 0 && (
+                                    <div>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Filter Lokasi Aset</p>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {sidebarLocations.map(loc => (
+                                                <button
+                                                    key={loc.id}
+                                                    onClick={() => {
+                                                        setMobileOpen(false);
+                                                        router.get('/assets', { location_id: loc.id }, { preserveState: false });
+                                                    }}
+                                                    className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 border border-slate-200/60"
+                                                >
+                                                    <MapPin size={12} className="text-slate-400" />
+                                                    {loc.nama}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Administrasi (Admin Only) */}
+                                {auth.user?.is_admin && (
+                                    <div>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Administrasi</p>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {adminNavItems.map(item => (
+                                                <Link
+                                                    key={item.href}
+                                                    href={item.href}
+                                                    onClick={() => setMobileOpen(false)}
+                                                    className={`flex items-center gap-2.5 p-3 rounded-xl border text-sm font-medium transition-colors ${currentUrl.startsWith(item.href) ? 'bg-[hsl(var(--primary)/0.08)] border-[hsl(var(--primary)/0.3)] text-[hsl(var(--primary))]' : 'bg-slate-50 border-slate-200/60 text-slate-700'}`}
+                                                >
+                                                    <item.icon size={18} className={currentUrl.startsWith(item.href) ? 'text-[hsl(var(--primary))]' : 'text-slate-500'} />
+                                                    <span>{item.label}</span>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Profile & Logout */}
+                                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="w-9 h-9 rounded-full bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] font-bold text-sm flex items-center justify-center border border-[hsl(var(--primary)/0.2)]">
+                                            {auth.user?.name?.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-semibold text-slate-800 leading-tight">{auth.user?.name}</p>
+                                            <p className="text-xs text-slate-500 capitalize">{auth.user?.role}</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 rounded-lg border border-red-200 hover:bg-red-100 transition-colors"
+                                    >
+                                        <LogOut size={14} /> Keluar
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
                     </>
                 )}
             </AnimatePresence>
@@ -423,15 +540,9 @@ export default function AuthenticatedLayout({ header, children }) {
             {/* Main Content */}
             <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 min-w-0 ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-[72px]'}`}>
                 {/* Topbar */}
-                <header className="sticky top-0 z-30 bg-white border-b border-slate-200">
+                <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200">
                     <div className="flex items-center justify-between px-4 lg:px-8 h-14">
                         <div className="flex items-center gap-3">
-                            <button
-                                onClick={() => setMobileOpen(true)}
-                                className="lg:hidden p-1.5 -ml-2 text-slate-400 hover:text-slate-700 rounded-md"
-                            >
-                                <Menu size={20} />
-                            </button>
                             <div className="flex items-center gap-2 text-sm">
                                 <span className="font-bold text-slate-800">{header}</span>
                             </div>
@@ -447,7 +558,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 </header>
 
                 {/* Page Content */}
-                <main className="flex-1 p-4 lg:p-8 min-w-0">
+                <main className="flex-1 p-4 lg:p-8 pb-24 lg:pb-8 min-w-0">
                     <motion.div
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -457,6 +568,50 @@ export default function AuthenticatedLayout({ header, children }) {
                         {children}
                     </motion.div>
                 </main>
+
+                {/* Mobile Bottom Navigation Bar */}
+                <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg px-2 py-1.5 flex items-center justify-around lg:hidden">
+                    <Link
+                        href="/dashboard"
+                        className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${currentUrl === '/dashboard' ? 'text-[hsl(var(--primary))] font-bold' : 'text-slate-500 hover:text-slate-800'}`}
+                    >
+                        <LayoutDashboard size={20} />
+                        <span className="text-[10px]">Dashboard</span>
+                    </Link>
+
+                    <Link
+                        href="/assets"
+                        className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${currentUrl.startsWith('/assets') ? 'text-[hsl(var(--primary))] font-bold' : 'text-slate-500 hover:text-slate-800'}`}
+                    >
+                        <Cpu size={20} />
+                        <span className="text-[10px]">Aset</span>
+                    </Link>
+
+                    {/* Prominent Center Scan Button */}
+                    <Link
+                        href="/scanner"
+                        className="flex flex-col items-center justify-center -mt-5 w-12 h-12 rounded-full bg-[hsl(var(--primary))] text-white shadow-md hover:opacity-95 transition-transform active:scale-95"
+                        title="Scan QR"
+                    >
+                        <ScanLine size={22} />
+                    </Link>
+
+                    <Link
+                        href="/consumables"
+                        className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${currentUrl.startsWith('/consumables') ? 'text-[hsl(var(--primary))] font-bold' : 'text-slate-500 hover:text-slate-800'}`}
+                    >
+                        <Package size={20} />
+                        <span className="text-[10px]">Consumable</span>
+                    </Link>
+
+                    <button
+                        onClick={() => setMobileOpen(!mobileOpen)}
+                        className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${mobileOpen ? 'text-[hsl(var(--primary))] font-bold' : 'text-slate-500 hover:text-slate-800'}`}
+                    >
+                        <MoreHorizontal size={20} />
+                        <span className="text-[10px]">Lainnya</span>
+                    </button>
+                </div>
             </div>
 
             <style dangerouslySetInnerHTML={{__html: `

@@ -48,7 +48,19 @@ export default function Show({ consumable, transactions }) {
                             {/* Card Info */}
                             <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
                                 <h1 className="text-2xl font-bold text-slate-900 mb-1">{consumable.nama}</h1>
-                                <p className="text-sm text-slate-500 mb-6">{consumable.category?.nama || 'Tanpa Kategori'}</p>
+                                <div className="flex items-center gap-3 text-sm text-slate-500 mb-6">
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-700">
+                                        {consumable.category?.nama || 'Tanpa Kategori'}
+                                    </span>
+                                    {consumable.location && (
+                                        <>
+                                            <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                            <span className="inline-flex items-center text-xs text-slate-600 bg-slate-100 px-2.5 py-1 rounded">
+                                                Lokasi: {consumable.location.full_path || consumable.location.nama}
+                                            </span>
+                                        </>
+                                    )}
+                                </div>
 
                                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                                     <div>

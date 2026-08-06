@@ -78,13 +78,14 @@ export default function Index({ categories }) {
         { header: 'Deskripsi', accessor: 'deskripsi', cell: row => <span className="text-slate-500">{row.deskripsi || '-'}</span> },
         {
             header: 'Aksi',
-            cellClassName: 'text-right',
+            headerClassName: 'text-center w-28',
+            cellClassName: 'text-center w-28',
             cell: (row) => (
-                <div className="flex items-center justify-end gap-2">
-                    <button onClick={() => openEditModal(row)} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded" title="Edit">
+                <div className="flex items-center justify-center gap-1">
+                    <button onClick={() => openEditModal(row)} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer" title="Edit">
                         <Edit size={16} />
                     </button>
-                    <button onClick={() => setDeleteModal({ isOpen: true, item: row })} className="p-1.5 text-red-600 hover:bg-red-50 rounded" title="Hapus">
+                    <button onClick={() => setDeleteModal({ isOpen: true, item: row })} className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer" title="Hapus">
                         <Trash2 size={16} />
                     </button>
                 </div>
@@ -108,7 +109,43 @@ export default function Index({ categories }) {
                         </button>
                     </div>
 
-                    <DataTable columns={columns} data={categories} pagination={false} />
+                    {/* Desktop View */}
+                    <div className="hidden md:block">
+                        <DataTable columns={columns} data={categories} pagination={false} />
+                    </div>
+
+                    {/* Mobile View */}
+                    <div className="md:hidden space-y-3">
+                        {(!categories || categories.length === 0) ? (
+                            <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500 text-sm">
+                                Belum ada data kategori.
+                            </div>
+                        ) : (
+                            categories.map(cat => (
+                                <div key={cat.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-2">
+                                    <div className="flex justify-between items-start gap-2">
+                                        <div>
+                                            <h4 className="font-bold text-slate-900 text-sm">{cat.nama}</h4>
+                                            <p className="text-xs text-slate-500 mt-1">{cat.deskripsi || 'Tanpa deskripsi'}</p>
+                                        </div>
+                                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 ${
+                                            cat.tipe === 'aset' ? 'bg-blue-100 text-blue-700' : 'bg-indigo-100 text-indigo-700'
+                                        }`}>
+                                            {cat.tipe}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 mt-1">
+                                        <button onClick={() => openEditModal(cat)} className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-amber-600 bg-amber-50 rounded-lg border border-amber-200">
+                                            <Edit size={14} /> Edit
+                                        </button>
+                                        <button onClick={() => setDeleteModal({ isOpen: true, item: cat })} className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 rounded-lg border border-red-200">
+                                            <Trash2 size={14} /> Hapus
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
                 </div>
             </PageTransition>
 

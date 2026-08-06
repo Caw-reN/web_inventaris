@@ -5,13 +5,15 @@ import PageTransition from '@/Components/PageTransition';
 import DataTable from '@/Components/DataTable';
 import BorrowModal from './BorrowModal';
 import ReturnModal from './ReturnModal';
-import { Plus, Search, Filter, Warehouse, Clock, CalendarDays, ArrowDownCircle } from 'lucide-react';
+import DetailModal from './DetailModal';
+import { Plus, Search, Filter, Warehouse, Clock, CalendarDays, ArrowDownCircle, Eye, CheckCircle2 } from 'lucide-react';
 
 export default function Index({ loans, filters, availableAssets = [], borrowers = [] }) {
     const [search, setSearch] = useState(filters.search || '');
     const [status, setStatus] = useState(filters.status || '');
     const [showBorrowModal, setShowBorrowModal] = useState(false);
     const [selectedLoanForReturn, setSelectedLoanForReturn] = useState(null);
+    const [selectedLoanForDetail, setSelectedLoanForDetail] = useState(null);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -48,15 +50,24 @@ export default function Index({ loans, filters, availableAssets = [], borrowers 
             header: 'Batas / Kembali',
             accessor: 'tenggat_waktu',
             cell: (row) => (
-                <div className="flex flex-col text-sm">
+                <div className="flex flex-col text-sm py-0.5">
                     {row.tanggal_kembali ? (
-                        <span className="text-green-600 font-medium flex items-center gap-1">
-                            <Clock size={12} /> {new Date(row.tanggal_kembali).toLocaleDateString('id-ID')}
-                        </span>
+                        <div className="flex flex-col">
+                            <span className="text-emerald-600 font-semibold flex items-center gap-1 text-[11px] uppercase tracking-wide">
+                                <CheckCircle2 size={12} /> Dikembalikan pada:
+                            </span>
+                            <span className="text-slate-800 text-sm font-medium mt-0.5">{new Date(row.tanggal_kembali).toLocaleDateString('id-ID')}</span>
+                            <span className="text-xs text-slate-500 font-mono">{new Date(row.tanggal_kembali).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</span>
+                        </div>
                     ) : (
-                        <span className="text-amber-600 font-medium flex items-center gap-1">
-                            <CalendarDays size={12} /> {row.tenggat_waktu ? new Date(row.tenggat_waktu).toLocaleDateString('id-ID') : 'Tanpa batas'}
-                        </span>
+                        <div className="flex flex-col">
+                            <span className="text-amber-600 font-semibold flex items-center gap-1 text-[11px] uppercase tracking-wide">
+                                <CalendarDays size={12} /> Batas Waktu:
+                            </span>
+                            <span className="text-slate-700 text-sm font-medium mt-0.5">
+                                {row.tenggat_waktu ? new Date(row.tenggat_waktu).toLocaleDateString('id-ID') : 'Tanpa batas (Opsional)'}
+                            </span>
+                        </div>
                     )}
                 </div>
             )
@@ -82,18 +93,26 @@ export default function Index({ loans, filters, availableAssets = [], borrowers 
         },
         {
             header: 'Aksi',
+            headerClassName: 'text-center w-40',
+            cellClassName: 'text-center w-40',
             accessor: 'actions',
             cell: (row) => (
-                <div className="flex items-center gap-2">
-                    {row.status === 'dipinjam' ? (
+                <div className="flex items-center justify-center gap-2">
+                    <button
+                        onClick={() => setSelectedLoanForDetail(row)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-colors border border-slate-200/80 shadow-xs cursor-pointer"
+                        title="Lihat Detail Peminjaman & Foto"
+                    >
+                        <Eye size={14} /> Detail
+                    </button>
+                    {row.status === 'dipinjam' && (
                         <button
                             onClick={() => setSelectedLoanForReturn(row)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition-colors shadow-sm"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium transition-colors shadow-sm cursor-pointer"
+                            title="Proses Pengembalian Aset"
                         >
                             <ArrowDownCircle size={14} /> Kembalikan
                         </button>
-                    ) : (
-                        <span className="text-xs text-slate-400 font-medium">-</span>
                     )}
                 </div>
             )
@@ -155,8 +174,64 @@ export default function Index({ loans, filters, availableAssets = [], borrowers 
                         </form>
                     </div>
 
-                    <div className="p-0">
+                    {/* Desktop View */}
+                    <div className="hidden md:block">
                         <DataTable columns={columns} data={loans} emptyMessage="Belum ada data peminjaman" />
+                    </div>
+
+                    {/* Mobile View */}
+                    <div className="md:hidden space-y-3 p-3 bg-slate-50 border-t border-slate-100">
+                        {(!loans || !loans.data || loans.data.length === 0) ? (
+                            <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500 text-sm">
+                                Belum ada data peminjaman
+                            </div>
+                        ) : (
+                            loans.data.map(loan => (
+                                <div key={loan.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 space-y-3">
+                                    <div className="flex justify-between items-start gap-2">
+                                        <div>
+                                            <h4 className="font-bold text-slate-900 text-sm">{loan.asset?.nama || 'Aset Tidak Ditemukan'}</h4>
+                                            <p className="text-xs text-slate-500 font-mono mt-0.5">{loan.asset?.nomor_inventaris || '-'}</p>
+                                        </div>
+                                        <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border uppercase tracking-wider shrink-0 ${
+                                            loan.status === 'dipinjam' ? 'bg-amber-100 text-amber-800 border-amber-200' :
+                                            loan.status === 'dikembalikan' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' :
+                                            'bg-red-100 text-red-800 border-red-200'
+                                        }`}>
+                                            {loan.status}
+                                        </span>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                                        <div>
+                                            <span className="text-slate-400 text-[10px] uppercase font-semibold block">Peminjam</span>
+                                            <span className="font-semibold text-slate-700 truncate block">{loan.nama_peminjam}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-slate-400 text-[10px] uppercase font-semibold block">Tgl Pinjam</span>
+                                            <span className="text-slate-700">{new Date(loan.tanggal_pinjam).toLocaleDateString('id-ID')}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                                        <button
+                                            onClick={() => setSelectedLoanForDetail(loan)}
+                                            className="flex-1 flex justify-center items-center gap-1.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition-colors"
+                                        >
+                                            <Eye size={14} /> Detail
+                                        </button>
+                                        {loan.status === 'dipinjam' && (
+                                            <button
+                                                onClick={() => setSelectedLoanForReturn(loan)}
+                                                className="flex-1 flex justify-center items-center gap-1.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition-colors"
+                                            >
+                                                <ArrowDownCircle size={14} /> Kembalikan
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
                 </div>
@@ -172,6 +247,16 @@ export default function Index({ loans, filters, availableAssets = [], borrowers 
                     loan={selectedLoanForReturn}
                     show={!!selectedLoanForReturn}
                     onClose={() => setSelectedLoanForReturn(null)}
+                />
+
+                <DetailModal
+                    loan={selectedLoanForDetail}
+                    show={!!selectedLoanForDetail}
+                    onClose={() => setSelectedLoanForDetail(null)}
+                    onReturn={(loan) => {
+                        setSelectedLoanForDetail(null);
+                        setSelectedLoanForReturn(loan);
+                    }}
                 />
             </PageTransition>
         </AuthenticatedLayout>

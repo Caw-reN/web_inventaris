@@ -6,6 +6,7 @@ import InputLabel from '@/Components/InputLabel';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
+import SelectInput from '@/Components/SelectInput';
 
 export default function BorrowModal({ asset = null, availableAssets = [], borrowers = [], show, onClose }) {
     const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
@@ -68,6 +69,11 @@ export default function BorrowModal({ asset = null, availableAssets = [], borrow
         });
     };
 
+    const assetOptions = availableAssets.map((a) => ({
+        value: a.id,
+        label: `${a.nama}${a.nomor_inventaris ? ` (${a.nomor_inventaris})` : ''}${a.merk ? ` - ${a.merk}` : ''}`,
+    }));
+
     return (
         <Modal show={show} onClose={onClose} maxWidth="md">
             <div className="p-6">
@@ -79,20 +85,14 @@ export default function BorrowModal({ asset = null, availableAssets = [], borrow
                     {!asset && (
                         <div>
                             <InputLabel htmlFor="asset_id" value="Pilih Aset" />
-                            <select
-                                id="asset_id"
+                            <SelectInput
                                 value={data.asset_id}
-                                onChange={e => setData('asset_id', e.target.value)}
-                                className="border-slate-300 focus:border-[hsl(var(--primary))] focus:ring-[hsl(var(--primary))] rounded-md shadow-sm mt-1 block w-full text-sm"
-                                required
-                            >
-                                <option value="">-- Pilih Aset (Tersedia) --</option>
-                                {availableAssets.map((a) => (
-                                    <option key={a.id} value={a.id}>
-                                        {a.nama} ({a.nomor_inventaris}) {a.merk ? `- ${a.merk}` : ''}
-                                    </option>
-                                ))}
-                            </select>
+                                onChange={val => setData('asset_id', val)}
+                                options={assetOptions}
+                                placeholder="-- Pilih Aset (Tersedia) --"
+                                className="mt-1"
+                                error={!!errors.asset_id}
+                            />
                             {availableAssets.length === 0 && (
                                 <p className="text-xs text-amber-600 mt-1 font-medium">Saat ini tidak ada aset berstatus &quot;Tersedia&quot;.</p>
                             )}

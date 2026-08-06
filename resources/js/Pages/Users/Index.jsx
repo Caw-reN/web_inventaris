@@ -108,14 +108,15 @@ export default function Index({ users, roles }) {
         },
         {
             header: 'Aksi',
-            cellClassName: 'text-right',
+            headerClassName: 'text-center w-28',
+            cellClassName: 'text-center w-28',
             cell: (row) => (
-                <div className="flex items-center justify-end gap-2">
-                    <button onClick={() => openEditModal(row)} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded" title="Edit">
+                <div className="flex items-center justify-center gap-1">
+                    <button onClick={() => openEditModal(row)} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer" title="Edit">
                         <Edit size={16} />
                     </button>
                     {row.id !== auth.user.id && (
-                        <button onClick={() => setDeleteModal({ isOpen: true, item: row })} className="p-1.5 text-red-600 hover:bg-red-50 rounded" title="Hapus">
+                        <button onClick={() => setDeleteModal({ isOpen: true, item: row })} className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer" title="Hapus">
                             <Trash2 size={16} />
                         </button>
                     )}
@@ -140,7 +141,63 @@ export default function Index({ users, roles }) {
                         </button>
                     </div>
 
-                    <DataTable columns={columns} data={users} pagination={true} />
+                    {/* Desktop View */}
+                    <div className="hidden md:block">
+                        <DataTable columns={columns} data={users} pagination={true} />
+                    </div>
+
+                    {/* Mobile View */}
+                    <div className="md:hidden space-y-3">
+                        {(!users || !users.data || users.data.length === 0) ? (
+                            <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500 text-sm">
+                                Belum ada data user.
+                            </div>
+                        ) : (
+                            users.data.map(u => {
+                                const roleObj = roles?.find(r => r.name === u.role);
+                                const isAdmin = u.role === 'admin';
+                                return (
+                                    <div key={u.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
+                                        <div className="flex justify-between items-start gap-2">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] font-bold flex items-center justify-center border border-[hsl(var(--primary)/0.2)] text-sm shrink-0">
+                                                    {u.name?.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                                                        {u.name}
+                                                        {u.id === auth.user.id && <span className="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-normal">Anda</span>}
+                                                    </h4>
+                                                    <p className="text-xs text-slate-500">{u.email}</p>
+                                                </div>
+                                            </div>
+                                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 ${u.is_active ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>
+                                                {u.is_active ? 'Aktif' : 'Nonaktif'}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize flex items-center gap-1 ${isAdmin ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                                                {isAdmin && <ShieldAlert size={12} />}
+                                                {roleObj?.label || u.role}
+                                            </span>
+                                            
+                                            <div className="flex items-center gap-2">
+                                                <button onClick={() => openEditModal(u)} className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-amber-600 bg-amber-50 rounded-lg border border-amber-200">
+                                                    <Edit size={14} /> Edit
+                                                </button>
+                                                {u.id !== auth.user.id && (
+                                                    <button onClick={() => setDeleteModal({ isOpen: true, item: u })} className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 rounded-lg border border-red-200">
+                                                        <Trash2 size={14} /> Hapus
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        )}
+                    </div>
                 </div>
             </PageTransition>
 

@@ -20,15 +20,15 @@ export default function Show({ asset, auditLog, borrowers = [] }) {
 
             <PageTransition>
                 <div className="w-full pb-10">
-                    <div className="flex justify-between items-center mb-6">
-                        <Link href={route('assets.index')} className="text-slate-500 hover:text-slate-700 inline-flex items-center gap-1 text-sm font-medium">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                        <Link href={route('assets.index')} className="text-slate-500 hover:text-slate-700 inline-flex items-center gap-1.5 text-sm font-medium whitespace-nowrap">
                             <ArrowLeft size={16} /> Kembali ke Daftar
                         </Link>
-                        <div className="flex gap-2">
+                        <div className="flex items-center gap-2">
                             {asset.status === 'tersedia' && (
                                 <button 
                                     onClick={() => setShowBorrowModal(true)}
-                                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+                                    className="flex-1 sm:flex-initial bg-[hsl(var(--primary))] hover:opacity-90 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
                                 >
                                     <ArrowUpCircle size={16} /> Pinjamkan
                                 </button>
@@ -36,13 +36,16 @@ export default function Show({ asset, auditLog, borrowers = [] }) {
                             {asset.status === 'digunakan' && activeLoan && (
                                 <button 
                                     onClick={() => setShowReturnModal(true)}
-                                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+                                    className="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors shadow-xs cursor-pointer"
                                 >
                                     <ArrowDownCircle size={16} /> Kembalikan
                                 </button>
                             )}
-                            <Link href={route('assets.edit', asset.id)} className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors">
-                                <Edit size={16} /> Edit Aset
+                            <Link 
+                                href={route('assets.edit', asset.id)} 
+                                className="flex-1 sm:flex-initial bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors shadow-xs whitespace-nowrap"
+                            >
+                                <Edit size={16} className="text-slate-500" /> Edit Aset
                             </Link>
                         </div>
                     </div>

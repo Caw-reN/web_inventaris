@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Category;
 use App\Models\Consumable;
 use App\Models\ConsumableTransaction;
+use App\Models\Location;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,7 +14,7 @@ class ConsumableController extends Controller
 {
     public function index(Request $request): Response
     {
-        $query = Consumable::with('category')
+        $query = Consumable::with(['category', 'location'])
             ->when($request->search, fn($q, $s) => $q->where('nama', 'like', "%{$s}%"))
             ->when($request->category_id, fn($q, $id) => $q->where('category_id', $id))
             ->when($request->stock_filter === 'low_stock', fn($q) => $q->whereColumn('stok', '<=', 'stok_minimum'))
@@ -23,6 +23,7 @@ class ConsumableController extends Controller
         return Inertia::render('Consumables/Index', [
             'consumables' => $query->paginate(15)->withQueryString(),
             'categories'  => Category::where('tipe', 'consumable')->orderBy('nama')->get(),
+            'locations'   => Location::orderBy('nama')->get(),
             'filters'     => $request->only(['search', 'category_id', 'stock_filter']),
         ]);
     }
@@ -31,6 +32,7 @@ class ConsumableController extends Controller
     {
         return Inertia::render('Consumables/Create', [
             'categories' => Category::where('tipe', 'consumable')->orderBy('nama')->get(),
+            'locations'  => Location::orderBy('nama')->get(),
         ]);
     }
 
@@ -40,6 +42,7 @@ class ConsumableController extends Controller
             'nama'         => 'required|string|max:255',
             'satuan'       => 'required|string|max:50',
             'category_id'  => 'required|exists:categories,id',
+            'location_id'  => 'nullable|exists:locations,id',
             'stok'         => 'required|integer|min:0',
             'stok_minimum' => 'required|integer|min:0',
             'harga_satuan' => 'nullable|numeric|min:0',
@@ -53,7 +56,7 @@ class ConsumableController extends Controller
 
     public function show(Consumable $consumable): Response
     {
-        $consumable->load('category');
+        $consumable->load(['category', 'location']);
 
         $transactions = ConsumableTransaction::with('user')
             ->where('consumable_id', $consumable->id)
@@ -69,8 +72,9 @@ class ConsumableController extends Controller
     public function edit(Consumable $consumable): Response
     {
         return Inertia::render('Consumables/Edit', [
-            'consumable' => $consumable->load('category'),
+            'consumable' => $consumable->load(['category', 'location']),
             'categories' => Category::where('tipe', 'consumable')->orderBy('nama')->get(),
+            'locations'  => Location::orderBy('nama')->get(),
         ]);
     }
 
@@ -80,6 +84,7 @@ class ConsumableController extends Controller
             'nama'         => 'required|string|max:255',
             'satuan'       => 'required|string|max:50',
             'category_id'  => 'required|exists:categories,id',
+            'location_id'  => 'nullable|exists:locations,id',
             'stok_minimum' => 'required|integer|min:0',
             'harga_satuan' => 'nullable|numeric|min:0',
             'keterangan'   => 'nullable|string',
