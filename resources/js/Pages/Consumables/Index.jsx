@@ -6,7 +6,7 @@ import DataTable from '@/Components/DataTable';
 import ConfirmDialog from '@/Components/ConfirmDialog';
 import CreateModal from './CreateModal';
 import UseModal from './UseModal';
-import { Plus, Search, Trash2, Edit, Eye, X, AlertTriangle, PackageMinus } from 'lucide-react';
+import { Plus, Search, Trash2, Edit, Eye, X, AlertTriangle, PackageMinus, ChevronDown, ChevronRight } from 'lucide-react';
 
 export default function Index({ consumables, categories, locations, filters }) {
     // Pastikan filters selalu object karena PHP [] (kosong) menjadi Array JS
@@ -17,6 +17,16 @@ export default function Index({ consumables, categories, locations, filters }) {
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, item: null });
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedItemForUse, setSelectedItemForUse] = useState(null);
+
+    // State untuk shrink / expand kategori di tampilan mobile
+    const [collapsedCategories, setCollapsedCategories] = useState({});
+
+    const toggleMobileCategory = (category) => {
+        setCollapsedCategories(prev => ({
+            ...prev,
+            [category]: !prev[category]
+        }));
+    };
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -189,81 +199,97 @@ export default function Index({ consumables, categories, locations, filters }) {
                                         acc[category].push(item);
                                         return acc;
                                     }, {})
-                                ).map(([category, items]) => (
-                                    <div key={category} className="space-y-3">
-                                        {/* Sticky Category Header */}
-                                        <div className="sticky top-14 z-20 bg-slate-100/95 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
-                                            <span className="font-bold text-slate-800 text-xs tracking-wide uppercase flex items-center gap-2">
-                                                <span className="w-2 h-2 rounded-full bg-[hsl(var(--primary))]"></span>
-                                                {category}
-                                            </span>
-                                            <span className="text-[10px] font-bold text-slate-600 bg-white px-2.5 py-0.5 rounded-full border border-slate-200 shadow-2xs">
-                                                {items.length} item
-                                            </span>
-                                        </div>
-
-                                        {/* Item Cards inside Category */}
-                                        <div className="space-y-3 pl-1">
-                                            {items.map(item => (
-                                                <div key={item.id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-                                                    {/* Card Header */}
-                                                    <div className="p-4 border-b border-slate-100 flex justify-between items-start gap-3">
-                                                        <div>
-                                                            <h3 className="font-semibold text-slate-900 flex items-center gap-2">
-                                                                {item.nama}
-                                                                {item.stok <= item.stok_minimum && (
-                                                                    <span className="flex items-center text-[10px] font-bold text-red-600 bg-red-100 px-1.5 py-0.5 rounded uppercase" title="Stok Menipis">
-                                                                        <AlertTriangle size={10} className="mr-0.5" /> Low
-                                                                    </span>
-                                                                )}
-                                                            </h3>
-                                                            <div className="flex flex-wrap items-center gap-2 mt-2">
-                                                                {item.location?.nama ? (
-                                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] text-slate-600 bg-slate-100">
-                                                                        Lokasi: {item.location.full_path || item.location.nama}
-                                                                    </span>
-                                                                ) : <span className="text-slate-400 text-[10px] italic">Lokasi: -</span>}
-                                                            </div>
-                                                        </div>
-                                                        <div className="text-right shrink-0">
-                                                            <div className="text-[10px] text-slate-500 uppercase font-semibold mb-0.5">Stok Saat Ini</div>
-                                                            <div className={`text-lg font-bold ${item.stok <= item.stok_minimum ? 'text-red-600' : 'text-slate-800'}`}>
-                                                                {item.stok} <span className="text-xs font-normal text-slate-500">{item.satuan}</span>
-                                                            </div>
-                                                            <div className="text-[10px] text-slate-400 mt-0.5">Min: {item.stok_minimum}</div>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    {/* Card Actions */}
-                                                    <div className="p-3 bg-slate-50 flex items-center justify-between gap-3">
-                                                        {/* Primary Action */}
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setSelectedItemForUse(item)}
-                                                            disabled={item.stok <= 0}
-                                                            className="flex-1 flex justify-center items-center gap-1.5 px-3 py-2 bg-[hsl(var(--primary))] hover:opacity-90 text-white rounded-lg text-sm font-semibold transition-all shadow-sm disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
-                                                        >
-                                                            <PackageMinus size={16} /> Gunakan
-                                                        </button>
-                                                        
-                                                        {/* Secondary Actions */}
-                                                        <div className="flex items-center gap-1">
-                                                            <Link href={route('consumables.show', item.id)} className="p-2 text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors shadow-sm">
-                                                                <Eye size={16} />
-                                                            </Link>
-                                                            <Link href={route('consumables.edit', item.id)} className="p-2 text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors shadow-sm">
-                                                                <Edit size={16} />
-                                                            </Link>
-                                                            <button onClick={() => setDeleteModal({ isOpen: true, item })} className="p-2 text-slate-400 hover:text-red-600 bg-white hover:bg-red-50 border border-slate-200 rounded-lg transition-colors shadow-sm">
-                                                                <Trash2 size={16} />
-                                                            </button>
-                                                        </div>
-                                                    </div>
+                                ).map(([category, items]) => {
+                                    const isCollapsed = !!collapsedCategories[category];
+                                    return (
+                                        <div key={category} className="space-y-3">
+                                            {/* Clickable Sticky Category Accordion Header */}
+                                            <button
+                                                type="button"
+                                                onClick={() => toggleMobileCategory(category)}
+                                                className="w-full sticky top-14 z-20 bg-slate-100/95 hover:bg-slate-200/90 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs flex items-center justify-between transition-all text-left cursor-pointer"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    {isCollapsed ? (
+                                                        <ChevronRight size={16} className="text-slate-500 shrink-0" />
+                                                    ) : (
+                                                        <ChevronDown size={16} className="text-slate-500 shrink-0" />
+                                                    )}
+                                                    <span className="font-bold text-slate-800 text-xs tracking-wide uppercase flex items-center gap-2">
+                                                        <span className="w-2 h-2 rounded-full bg-[hsl(var(--primary))] shrink-0"></span>
+                                                        {category}
+                                                    </span>
                                                 </div>
-                                            ))}
+                                                <span className="text-[10px] font-bold text-slate-600 bg-white px-2.5 py-0.5 rounded-full border border-slate-200 shadow-2xs flex items-center gap-1">
+                                                    {items.length} item {isCollapsed && <span className="text-slate-400 font-normal text-[9px]">(Klik untuk buka)</span>}
+                                                </span>
+                                            </button>
+
+                                            {/* Item Cards inside Category (Shrank when isCollapsed) */}
+                                            {!isCollapsed && (
+                                                <div className="space-y-3 pl-1">
+                                                    {items.map(item => (
+                                                        <div key={item.id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                                                            {/* Card Header */}
+                                                            <div className="p-4 border-b border-slate-100 flex justify-between items-start gap-3">
+                                                                <div>
+                                                                    <h3 className="font-semibold text-slate-900 flex items-center gap-2">
+                                                                        {item.nama}
+                                                                        {item.stok <= item.stok_minimum && (
+                                                                            <span className="flex items-center text-[10px] font-bold text-red-600 bg-red-100 px-1.5 py-0.5 rounded uppercase" title="Stok Menipis">
+                                                                                <AlertTriangle size={10} className="mr-0.5" /> Low
+                                                                            </span>
+                                                                        )}
+                                                                    </h3>
+                                                                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                                                                        {item.location?.nama ? (
+                                                                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] text-slate-600 bg-slate-100">
+                                                                                Lokasi: {item.location.full_path || item.location.nama}
+                                                                            </span>
+                                                                        ) : <span className="text-slate-400 text-[10px] italic">Lokasi: -</span>}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="text-right shrink-0">
+                                                                    <div className="text-[10px] text-slate-500 uppercase font-semibold mb-0.5">Stok Saat Ini</div>
+                                                                    <div className={`text-lg font-bold ${item.stok <= item.stok_minimum ? 'text-red-600' : 'text-slate-800'}`}>
+                                                                        {item.stok} <span className="text-xs font-normal text-slate-500">{item.satuan}</span>
+                                                                    </div>
+                                                                    <div className="text-[10px] text-slate-400 mt-0.5">Min: {item.stok_minimum}</div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            {/* Card Actions */}
+                                                            <div className="p-3 bg-slate-50 flex items-center justify-between gap-3">
+                                                                {/* Primary Action */}
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setSelectedItemForUse(item)}
+                                                                    disabled={item.stok <= 0}
+                                                                    className="flex-1 flex justify-center items-center gap-1.5 px-3 py-2 bg-[hsl(var(--primary))] hover:opacity-90 text-white rounded-lg text-sm font-semibold transition-all shadow-sm disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
+                                                                >
+                                                                    <PackageMinus size={16} /> Gunakan
+                                                                </button>
+                                                                
+                                                                {/* Secondary Actions */}
+                                                                <div className="flex items-center gap-1">
+                                                                    <Link href={route('consumables.show', item.id)} className="p-2 text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors shadow-sm">
+                                                                        <Eye size={16} />
+                                                                    </Link>
+                                                                    <Link href={route('consumables.edit', item.id)} className="p-2 text-slate-400 hover:text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors shadow-sm">
+                                                                        <Edit size={16} />
+                                                                    </Link>
+                                                                    <button onClick={() => setDeleteModal({ isOpen: true, item })} className="p-2 text-slate-400 hover:text-red-600 bg-white hover:bg-red-50 border border-slate-200 rounded-lg transition-colors shadow-sm">
+                                                                        <Trash2 size={16} />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
                         

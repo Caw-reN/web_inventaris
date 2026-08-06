@@ -7,13 +7,13 @@ export default function DataTable({ data, columns, pagination = true, groupBy, g
     const rows = pagination && data?.data ? data.data : (data || []);
     const links = pagination && data?.links ? data.links : [];
 
-    const [expandedGroups, setExpandedGroups] = useState(new Set());
+    const [collapsedGroups, setCollapsedGroups] = useState(new Set());
 
     const toggleGroup = (key) => {
-        const newSet = new Set(expandedGroups);
+        const newSet = new Set(collapsedGroups);
         if (newSet.has(key)) newSet.delete(key);
         else newSet.add(key);
-        setExpandedGroups(newSet);
+        setCollapsedGroups(newSet);
     };
 
     // Parse groupBy into an array of groupers
@@ -52,7 +52,7 @@ export default function DataTable({ data, columns, pagination = true, groupBy, g
             list.forEach(node => {
                 if (node.isGroupHeader) {
                     result.push(node);
-                    if (expandedGroups.has(node.groupKey)) {
+                    if (!collapsedGroups.has(node.groupKey)) {
                         traverse(node.children);
                     }
                 } else {
@@ -95,15 +95,15 @@ export default function DataTable({ data, columns, pagination = true, groupBy, g
                         ) : (
                             displayRows.map((rowOrGroup, i) => {
                                 if (rowOrGroup.isGroupHeader) {
-                                    const isExpanded = expandedGroups.has(rowOrGroup.groupKey);
+                                    const isCollapsed = collapsedGroups.has(rowOrGroup.groupKey);
                                     
                                     return (
                                         <tr 
                                             key={rowOrGroup.groupKey}
-                                            className={`cursor-pointer border-y border-slate-200 transition-colors shadow-sm
+                                            className={`cursor-pointer border-y border-slate-200 transition-colors shadow-2xs
                                                 ${rowOrGroup.depth === 0 
-                                                    ? 'bg-slate-100 hover:bg-slate-200/60 font-semibold' 
-                                                    : 'bg-slate-50 hover:bg-slate-100/80 font-medium'
+                                                    ? 'bg-slate-100 hover:bg-slate-200/80 font-semibold' 
+                                                    : 'bg-slate-50 hover:bg-slate-100 font-medium'
                                                 }`}
                                             onClick={() => toggleGroup(rowOrGroup.groupKey)}
                                         >
@@ -115,9 +115,9 @@ export default function DataTable({ data, columns, pagination = true, groupBy, g
                                                                 className="flex items-center gap-2"
                                                                 style={{ paddingLeft: `${rowOrGroup.depth * 1.5}rem` }}
                                                             >
-                                                                {isExpanded 
-                                                                    ? <ChevronDown size={16} className="text-slate-500 shrink-0" /> 
-                                                                    : <ChevronRight size={16} className="text-slate-500 shrink-0" />
+                                                                {isCollapsed 
+                                                                    ? <ChevronRight size={16} className="text-slate-500 shrink-0" />
+                                                                    : <ChevronDown size={16} className="text-slate-500 shrink-0" /> 
                                                                 }
                                                                 <div>
                                                                     {groupHeader 
