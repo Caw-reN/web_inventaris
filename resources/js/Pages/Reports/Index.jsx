@@ -80,58 +80,63 @@ export default function Index({ reports, filters }) {
             <Head title="Laporan Kendala Aset" />
 
             <PageTransition>
-                <div className="w-full space-y-6 pb-12">
-                    {/* Header Banner */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-red-600 to-rose-700 rounded-2xl p-6 text-white shadow-lg">
-                        <div className="space-y-1">
-                            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-red-100 border border-white/20">
-                                <FileWarning size={14} /> Pusat Kendala & Kerusakan
-                            </div>
-                            <h1 className="text-2xl font-black tracking-tight">Daftar Laporan Kendala Aset</h1>
-                            <p className="text-red-100 text-xs sm:text-sm">Pantau dan tindak lanjuti laporan kerusakan dari pengguna / siswa secara real-time.</p>
-                        </div>
-                    </div>
-
+                <div className="w-full space-y-4 pb-12">
                     {/* Filter & Search Bar */}
-                    <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs space-y-3">
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             {/* Search Input */}
-                            <form onSubmit={handleSearch} className="relative w-full sm:w-80">
-                                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                            <form onSubmit={handleSearch} className="relative w-full md:w-96">
+                                <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                 <input
                                     type="text"
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
-                                    placeholder="Cari pelapor, kelas, aset..."
-                                    className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:ring-[hsl(var(--primary))] transition-all"
+                                    placeholder="Cari pelapor, kelas, atau aset..."
+                                    className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:bg-white focus:ring-2 focus:ring-[hsl(var(--primary)/0.2)] focus:border-[hsl(var(--primary))] transition-all shadow-2xs"
                                 />
                             </form>
 
                             {/* Status Filter Pills */}
-                            <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
                                 <button
                                     onClick={() => handleFilterStatus('')}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${statusFilter === '' ? 'bg-[hsl(var(--primary))] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                                        statusFilter === '' 
+                                            ? 'bg-slate-900 text-white shadow-xs' 
+                                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                    }`}
                                 >
-                                    Semua
+                                    Semua Laporan
                                 </button>
                                 <button
                                     onClick={() => handleFilterStatus('open')}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${statusFilter === 'open' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                                        statusFilter === 'open' 
+                                            ? 'bg-amber-500 text-white shadow-xs' 
+                                            : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200/60'
+                                    }`}
                                 >
-                                    Menunggu
+                                    <Clock size={13} /> Menunggu
                                 </button>
                                 <button
                                     onClick={() => handleFilterStatus('in_progress')}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${statusFilter === 'in_progress' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                                        statusFilter === 'in_progress' 
+                                            ? 'bg-blue-600 text-white shadow-xs' 
+                                            : 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/60'
+                                    }`}
                                 >
-                                    Diproses
+                                    <Wrench size={13} /> Diproses
                                 </button>
                                 <button
                                     onClick={() => handleFilterStatus('resolved')}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${statusFilter === 'resolved' ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                                        statusFilter === 'resolved' 
+                                            ? 'bg-emerald-600 text-white shadow-xs' 
+                                            : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/60'
+                                    }`}
                                 >
-                                    Selesai
+                                    <CheckCircle2 size={13} /> Selesai
                                 </button>
                             </div>
                         </div>
