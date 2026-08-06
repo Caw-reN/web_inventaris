@@ -45,13 +45,19 @@ class ReportController extends Controller
 
         $validated['handled_by'] = auth()->id();
 
-        if ($validated['status'] === 'resolved') {
-            $validated['resolved_at'] = now();
-        }
-
         $report->update($validated);
 
-        return back()->with('success', 'Status laporan berhasil diperbarui.');
+        // Otomatis sinkronkan status aset berdasarkan laporan
+        if ($report->asset) {
+            if ($validated['status'] === 'resolved') {
+                $report->asset->update(['status' => 'tersedia']);
+            } else {
+                // Status open atau in_progress -> set aset ke maintenance
+                $report->asset->update(['status' => 'maintenance']);
+            }
+        }
+
+        return back()->with('success', 'Status laporan dan status aset berhasil diperbarui.');
     }
 
     public function destroy(Report $report): RedirectResponse

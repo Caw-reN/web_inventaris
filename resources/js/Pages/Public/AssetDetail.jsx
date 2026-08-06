@@ -116,6 +116,21 @@ export default function AssetDetail({ asset }) {
                 </div>
             )}
 
+            {/* Banner Status Maintenance / Perbaikan */}
+            {asset.status === 'maintenance' && (
+                <div className="mb-5 bg-amber-50/90 border border-amber-200/90 rounded-2xl p-4 flex items-start gap-3.5 shadow-2xs">
+                    <div className="p-2.5 bg-amber-500 text-white rounded-xl shrink-0 mt-0.5 shadow-xs">
+                        <Wrench size={18} />
+                    </div>
+                    <div className="text-xs">
+                        <p className="font-bold text-amber-950 text-sm">Sedang Dalam Maintenance / Perbaikan</p>
+                        <p className="text-amber-800 text-xs mt-1 leading-relaxed font-medium">
+                            Aset ini sedang dalam penanganan teknisi untuk perbaikan kendala. Sementara waktu aset tidak dapat dipinjam.
+                        </p>
+                    </div>
+                </div>
+            )}
+
             {/* Frame Foto Fisik Aset */}
             <div className="mb-5">
                 {asset.foto ? (
@@ -220,6 +235,10 @@ export default function AssetDetail({ asset }) {
                             >
                                 <PackagePlus size={18} /> Ajukan Peminjaman Aset
                             </button>
+                        ) : asset.status === 'maintenance' ? (
+                            <div className="w-full text-center py-3 px-4 bg-amber-50 border border-amber-200/90 rounded-xl text-amber-900 text-xs font-bold flex items-center justify-center gap-2 shadow-2xs">
+                                <Wrench size={15} className="text-amber-600" /> Aset Sedang Dalam Maintenance / Perbaikan
+                            </div>
                         ) : (
                             <div className="w-full text-center py-2.5 px-4 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 text-xs font-semibold">
                                 Aset Tidak Tersedia untuk Dipinjam ({asset.status_label})
