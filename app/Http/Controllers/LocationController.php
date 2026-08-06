@@ -13,7 +13,7 @@ class LocationController extends Controller
     public function index(): Response
     {
         return Inertia::render('Locations/Index', [
-            'locations' => Location::withCount('assets')->orderBy('nama')->get(),
+            'locations' => Location::getHierarchical(),
         ]);
     }
 

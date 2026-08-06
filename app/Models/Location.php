@@ -41,7 +41,7 @@ class Location extends Model
      */
     public static function getHierarchical()
     {
-        $all = self::with('children')->orderBy('nama')->get();
+        $all = self::with('children')->withCount('assets')->orderBy('nama')->get();
         $result = collect();
 
         $traverse = function ($items) use (&$traverse, &$result) {

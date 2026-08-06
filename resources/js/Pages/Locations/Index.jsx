@@ -67,13 +67,21 @@ export default function Index({ locations }) {
         {
             header: 'Nama Lokasi',
             accessor: 'nama',
-            cell: row => (
-                <div className="flex items-center gap-2 font-medium text-slate-900">
-                    <MapPin size={16} className={!row.parent_id ? "text-[hsl(var(--primary))]" : "text-slate-400"} />
-                    {row.nama}
-                </div>
-            )
+            cell: row => {
+                const depth = row.full_path ? (row.full_path.split(' > ').length - 1) : 0;
+                return (
+                    <div 
+                        className="flex items-center gap-2 font-medium"
+                        style={{ paddingLeft: `${depth * 1.5}rem` }}
+                    >
+                        {depth > 0 && <span className="text-slate-400 font-mono text-xs select-none">└</span>}
+                        <MapPin size={16} className={depth === 0 ? "text-[hsl(var(--primary))]" : "text-slate-400"} />
+                        <span className={depth === 0 ? "font-bold text-slate-900" : "text-slate-700"}>{row.nama}</span>
+                    </div>
+                );
+            }
         },
+        { header: 'Jalur Lengkap', accessor: 'full_path', cell: row => <span className="text-xs text-slate-500 font-mono">{row.full_path}</span> },
         { header: 'Deskripsi', accessor: 'deskripsi', cell: row => <span className="text-slate-500">{row.deskripsi || '-'}</span> },
         {
             header: 'Aksi',
@@ -81,30 +89,16 @@ export default function Index({ locations }) {
             cellClassName: 'text-center w-28',
             cell: (row) => (
                 <div className="flex items-center justify-center gap-1">
-                    <button onClick={(e) => { e.stopPropagation(); openEditModal(row); }} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer" title="Edit">
+                    <button onClick={(e) => { e.stopPropagation(); openEditModal(row); }} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer" title="Edit Lokasi">
                         <Edit size={16} />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); setDeleteModal({ isOpen: true, item: row }); }} className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer" title="Hapus">
+                    <button onClick={(e) => { e.stopPropagation(); setDeleteModal({ isOpen: true, item: row }); }} className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer" title="Hapus Lokasi">
                         <Trash2 size={16} />
                     </button>
                 </div>
             )
         }
     ];
-
-    // Build tree structure for DataTable
-    const locationTree = [];
-    const locMap = {};
-    locations.forEach(loc => {
-        locMap[loc.id] = { ...loc, children: [] };
-    });
-    locations.forEach(loc => {
-        if (loc.parent_id && locMap[loc.parent_id]) {
-            locMap[loc.parent_id].children.push(locMap[loc.id]);
-        } else {
-            locationTree.push(locMap[loc.id]);
-        }
-    });
 
     return (
         <AuthenticatedLayout header={<h2 className="font-semibold text-xl leading-tight">Master Lokasi</h2>}>
@@ -126,62 +120,60 @@ export default function Index({ locations }) {
                     <div className="hidden md:block">
                         <DataTable 
                             columns={columns} 
-                            data={locationTree} 
+                            data={locations} 
                             pagination={false} 
-                            subItemsKey="children"
                         />
                     </div>
 
                     {/* Mobile View */}
-                    <div className="md:hidden space-y-3">
-                        {(!locationTree || locationTree.length === 0) ? (
+                    <div className="md:hidden space-y-2.5">
+                        {(!locations || locations.length === 0) ? (
                             <div className="bg-white rounded-xl border border-slate-200 p-8 text-center text-slate-500 text-sm">
                                 Belum ada data lokasi.
                             </div>
                         ) : (
-                            <div className="space-y-3">
-                                {locationTree.map(loc => (
-                                    <div key={loc.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 space-y-2">
-                                        <div className="flex items-center justify-between gap-2">
-                                            <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
-                                                <MapPin size={16} className="text-[hsl(var(--primary))]" />
-                                                {loc.nama}
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                                <button onClick={(e) => { e.stopPropagation(); openEditModal(loc); }} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg">
-                                                    <Edit size={16} />
-                                                </button>
-                                                <button onClick={(e) => { e.stopPropagation(); setDeleteModal({ isOpen: true, item: loc }); }} className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg">
-                                                    <Trash2 size={16} />
-                                                </button>
+                            locations.map(loc => {
+                                const depth = loc.full_path ? (loc.full_path.split(' > ').length - 1) : 0;
+                                return (
+                                    <div 
+                                        key={loc.id} 
+                                        className={`bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 flex items-center justify-between gap-3 ${depth > 0 ? 'bg-slate-50/60' : ''}`}
+                                        style={{ marginLeft: depth > 0 ? `${depth * 0.75}rem` : 0 }}
+                                    >
+                                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                                            {depth > 0 && <span className="text-slate-400 font-mono text-xs select-none shrink-0">└</span>}
+                                            <MapPin size={16} className={depth === 0 ? "text-[hsl(var(--primary))] shrink-0" : "text-slate-400 shrink-0"} />
+                                            <div className="min-w-0">
+                                                <h4 className={`text-sm truncate ${depth === 0 ? 'font-bold text-slate-900' : 'font-semibold text-slate-800'}`}>
+                                                    {loc.nama}
+                                                </h4>
+                                                {depth > 0 && (
+                                                    <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                                                        {loc.full_path}
+                                                    </p>
+                                                )}
+                                                {loc.deskripsi && <p className="text-xs text-slate-500 truncate mt-0.5">{loc.deskripsi}</p>}
                                             </div>
                                         </div>
-                                        {loc.deskripsi && <p className="text-xs text-slate-500 pl-6">{loc.deskripsi}</p>}
-
-                                        {loc.children && loc.children.length > 0 && (
-                                            <div className="pl-3 mt-2 pt-2 border-t border-slate-100 space-y-2">
-                                                {loc.children.map(child => (
-                                                    <div key={child.id} className="flex items-center justify-between bg-slate-50 p-2.5 rounded-lg border border-slate-200/60">
-                                                        <div className="flex items-center gap-2 font-medium text-slate-800 text-xs">
-                                                            <div className="w-2.5 h-2.5 border-b-2 border-l-2 border-slate-400 rounded-bl shrink-0 -mt-1" />
-                                                            <MapPin size={14} className="text-slate-400 shrink-0" />
-                                                            <span className="truncate">{child.nama}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-1 shrink-0">
-                                                            <button onClick={(e) => { e.stopPropagation(); openEditModal(child); }} className="p-1 text-amber-600 hover:bg-amber-100 rounded">
-                                                                <Edit size={14} />
-                                                            </button>
-                                                            <button onClick={(e) => { e.stopPropagation(); setDeleteModal({ isOpen: true, item: child }); }} className="p-1 text-red-600 hover:bg-red-100 rounded">
-                                                                <Trash2 size={14} />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
+                                        <div className="flex items-center gap-1 shrink-0">
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); openEditModal(loc); }} 
+                                                className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                                                title="Edit Lokasi"
+                                            >
+                                                <Edit size={16} />
+                                            </button>
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); setDeleteModal({ isOpen: true, item: loc }); }} 
+                                                className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                title="Hapus Lokasi"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
                                     </div>
-                                ))}
-                            </div>
+                                );
+                            })
                         )}
                     </div>
                 </div>
