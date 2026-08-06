@@ -12,11 +12,15 @@ class ReportController extends Controller
 {
     public function index(Request $request): Response
     {
-        $query = Report::with(['asset', 'handler'])
+        $query = Report::with(['asset.location', 'handler'])
             ->when($request->status, fn($q, $s) => $q->where('status', $s))
             ->when($request->search, fn($q, $s) =>
                 $q->where('nama_pelapor', 'like', "%{$s}%")
-                  ->orWhere('deskripsi_kendala', 'like', "%{$s}%"))
+                  ->orWhere('kelas', 'like', "%{$s}%")
+                  ->orWhere('deskripsi_kendala', 'like', "%{$s}%")
+                  ->orWhereHas('asset', fn($qAsset) => 
+                      $qAsset->where('nama', 'like', "%{$s}%")
+                             ->orWhere('nomor_inventaris', 'like', "%{$s}%")))
             ->latest();
 
         return Inertia::render('Reports/Index', [
