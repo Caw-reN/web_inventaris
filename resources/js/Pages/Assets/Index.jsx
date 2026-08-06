@@ -167,11 +167,22 @@ export default function Index({ assets, categories, locations, filters }) {
                         <button
                             type="button"
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="flex items-center justify-center gap-2 bg-[hsl(var(--primary))] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm w-full sm:w-auto cursor-pointer"
+                            className="hidden sm:flex items-center justify-center gap-2 bg-[hsl(var(--primary))] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm cursor-pointer whitespace-nowrap"
                         >
                             <Plus size={16} /> Tambah Aset
                         </button>
                     </div>
+
+                    {/* Mobile Floating Action Button (FAB) Pinned Above Bottom Navbar */}
+                    <button
+                        type="button"
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="sm:hidden fixed bottom-20 right-4 z-40 bg-[hsl(var(--primary))] text-white p-3.5 rounded-full shadow-lg border border-white/20 active:scale-95 transition-all flex items-center justify-center cursor-pointer shadow-indigo-500/25"
+                        title="Tambah Aset Baru"
+                        aria-label="Tambah Aset"
+                    >
+                        <Plus size={24} />
+                    </button>
 
                     {/* Mobile Dedicated Search & Filter Card */}
                     <div className="md:hidden bg-white rounded-2xl border border-slate-200 shadow-2xs p-4 mb-4">
