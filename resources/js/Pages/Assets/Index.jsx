@@ -8,7 +8,7 @@ import ConfirmDialog from '@/Components/ConfirmDialog';
 import CreateModal from './CreateModal';
 import QrModal from './QrModal';
 import SelectInput from '@/Components/SelectInput';
-import { Plus, Search, Filter, Trash2, Edit, Eye, X, Printer, QrCode, ChevronDown, ChevronRight, Layers, Package } from 'lucide-react';
+import { Plus, Search, Filter, Trash2, Edit, Eye, X, Printer, QrCode, ChevronDown, ChevronRight, Layers, Package, Boxes } from 'lucide-react';
 
 export default function Index({ assets, categories, locations, filters }) {
     const [search, setSearch] = useState(filters.search || '');
@@ -158,68 +158,88 @@ export default function Index({ assets, categories, locations, filters }) {
             <PageTransition>
                 <div className="w-full pb-10">
 
-                    {/* Top Search, Filters & Action Bar */}
-                    <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3 mb-6">
-                        <form onSubmit={handleSearch} className="flex-1 flex flex-col sm:flex-row gap-2">
-                            <div className="relative flex-1">
-                                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                                <input
-                                    type="text"
-                                    value={search}
-                                    onChange={e => setSearch(e.target.value)}
-                                    placeholder="Cari nama, seri, merk..."
-                                    className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-[hsl(var(--primary))]"
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 sm:flex gap-2">
-                                <SelectInput
-                                    value={statusFilter}
-                                    onChange={val => { setStatusFilter(val); router.get(route('assets.index'), { search, status: val, category_id: categoryFilter, location_id: locationFilter }, { preserveState: true }); }}
-                                    options={[
-                                        { value: '', label: 'Semua Status' },
-                                        { value: 'tersedia', label: 'Tersedia' },
-                                        { value: 'digunakan', label: 'Digunakan' },
-                                        { value: 'maintenance', label: 'Maintenance' },
-                                        { value: 'rusak', label: 'Rusak' },
-                                        { value: 'tidak_aktif', label: 'Tidak Aktif' }
-                                    ]}
-                                    className="w-full sm:min-w-[140px]"
-                                />
-                                <SelectInput
-                                    value={categoryFilter}
-                                    onChange={val => { setCategoryFilter(val); router.get(route('assets.index'), { search, status: statusFilter, category_id: val, location_id: locationFilter }, { preserveState: true }); }}
-                                    options={[
-                                        { value: '', label: 'Semua Kategori' },
-                                        ...categories.map(c => ({ value: c.id, label: c.nama }))
-                                    ]}
-                                    className="w-full sm:min-w-[150px]"
-                                />
-                            </div>
-                            {(search || statusFilter || categoryFilter || locationFilter) && (
-                                <button type="button" onClick={handleResetFilters} className="px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg flex items-center justify-center gap-1">
-                                    <X size={14} /> Reset
-                                </button>
-                            )}
-                        </form>
-
+                    {/* Top Action Header */}
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div>
+                            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Daftar Aset</h1>
+                            <p className="text-sm text-slate-500 mt-1">Kelola dan pantau seluruh inventaris aset perangkat dan barang.</p>
+                        </div>
                         <button
                             type="button"
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="flex items-center justify-center gap-2 bg-[hsl(var(--primary))] text-white px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 whitespace-nowrap shadow-xs cursor-pointer w-full md:w-auto"
+                            className="flex items-center justify-center gap-2 bg-[hsl(var(--primary))] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition-all shadow-sm w-full sm:w-auto cursor-pointer"
                         >
                             <Plus size={16} /> Tambah Aset
                         </button>
                     </div>
 
-                    {/* Desktop View */}
-                    <div className="hidden md:block">
-                        <DataTable 
-                            columns={columns} 
-                            data={assets} 
-                            groupBy={[
-                                (row) => row.category?.nama || 'Tanpa Kategori',
-                                (row) => row.nama.replace(/\s-\s\d+$/, '')
-                            ]}
+                    {/* Integrated Table Card with Header */}
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+                        {/* Table Header Section */}
+                        <div className="p-4 md:p-5 border-b border-slate-100 flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between bg-slate-50/70">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-[hsl(var(--primary)/0.1)] p-2.5 rounded-xl text-[hsl(var(--primary))] shrink-0 border border-[hsl(var(--primary)/0.15)]">
+                                    <Boxes size={22} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-slate-800 text-base md:text-lg">Riwayat & Daftar Aset</h3>
+                                    <p className="text-xs md:text-sm text-slate-500">Seluruh data aset terkelola beserta kategori dan lokasinya.</p>
+                                </div>
+                            </div>
+
+                            {/* Integrated Search & Filter Controls */}
+                            <form onSubmit={handleSearch} className="w-full lg:w-auto flex flex-col sm:flex-row gap-2">
+                                <div className="relative flex-1 sm:w-64">
+                                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                                    <input
+                                        type="text"
+                                        value={search}
+                                        onChange={e => setSearch(e.target.value)}
+                                        placeholder="Cari nama, seri, merk..."
+                                        className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-[hsl(var(--primary))] focus:ring-1 focus:ring-[hsl(var(--primary))]"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 sm:flex gap-2">
+                                    <SelectInput
+                                        value={statusFilter}
+                                        onChange={val => { setStatusFilter(val); router.get(route('assets.index'), { search, status: val, category_id: categoryFilter, location_id: locationFilter }, { preserveState: true }); }}
+                                        options={[
+                                            { value: '', label: 'Semua Status' },
+                                            { value: 'tersedia', label: 'Tersedia' },
+                                            { value: 'digunakan', label: 'Digunakan' },
+                                            { value: 'maintenance', label: 'Maintenance' },
+                                            { value: 'rusak', label: 'Rusak' },
+                                            { value: 'tidak_aktif', label: 'Tidak Aktif' }
+                                        ]}
+                                        className="w-full sm:min-w-[130px]"
+                                    />
+                                    <SelectInput
+                                        value={categoryFilter}
+                                        onChange={val => { setCategoryFilter(val); router.get(route('assets.index'), { search, status: statusFilter, category_id: val, location_id: locationFilter }, { preserveState: true }); }}
+                                        options={[
+                                            { value: '', label: 'Semua Kategori' },
+                                            ...categories.map(c => ({ value: c.id, label: c.nama }))
+                                        ]}
+                                        className="w-full sm:min-w-[145px]"
+                                    />
+                                </div>
+                                {(search || statusFilter || categoryFilter || locationFilter) && (
+                                    <button type="button" onClick={handleResetFilters} className="px-3 py-2 text-sm text-slate-600 hover:bg-slate-200/80 bg-white border border-slate-200 rounded-lg flex items-center justify-center gap-1">
+                                        <X size={14} /> Reset
+                                    </button>
+                                )}
+                            </form>
+                        </div>
+
+                        {/* Desktop View */}
+                        <div className="hidden md:block">
+                            <DataTable 
+                                columns={columns} 
+                                data={assets} 
+                                groupBy={[
+                                    (row) => row.category?.nama || 'Tanpa Kategori',
+                                    (row) => row.nama.replace(/\s-\s\d+$/, '')
+                                ]}
                             groupHeader={(key, items, depth) => {
                                 if (depth === 0) {
                                     return (
