@@ -18,28 +18,37 @@ class PublicController extends Controller
     public function show(string $uuid): Response
     {
         $asset = Asset::where('uuid', $uuid)
-            ->with(['category', 'location'])
+            ->with(['category', 'location', 'loans' => fn($q) => $q->where('status', 'dipinjam')->latest()])
             ->firstOrFail();
+
+        $activeLoan = $asset->loans->first();
 
         // Sembunyikan field sensitif dari tampilan publik
         $publicAsset = [
-            'id'           => $asset->id,
-            'uuid'         => $asset->uuid,
-            'nama'         => $asset->nama,
-            'no_seri'      => $asset->no_seri,
-            'merk'         => $asset->merk,
-            'status'       => $asset->status,
-            'status_label' => $asset->status_label,
-            'spesifikasi'  => $asset->spesifikasi,
-            'foto'         => $asset->foto ? asset('storage/' . $asset->foto) : null,
-            'category'     => $asset->category?->only(['id', 'nama']),
-            'location'     => $asset->location ? [
+            'id'               => $asset->id,
+            'uuid'             => $asset->uuid,
+            'nomor_inventaris' => $asset->nomor_inventaris,
+            'nama'             => $asset->nama,
+            'no_seri'          => $asset->no_seri,
+            'merk'             => $asset->merk,
+            'status'           => $asset->status,
+            'status_label'     => $asset->status_label,
+            'spesifikasi'      => $asset->spesifikasi,
+            'tanggal_beli'     => $asset->tanggal_beli ? $asset->tanggal_beli->format('d M Y') : null,
+            'foto'             => $asset->foto ? asset('storage/' . $asset->foto) : null,
+            'category'         => $asset->category?->only(['id', 'nama']),
+            'location'         => $asset->location ? [
                 'id'        => $asset->location->id,
                 'nama'      => $asset->location->nama,
                 'kode'      => $asset->location->kode,
                 'full_path' => $asset->location->full_path,
             ] : null,
-            'catatan'      => $asset->catatan,
+            'active_loan'      => $activeLoan ? [
+                'peminjam'       => $activeLoan->nama_peminjam,
+                'kelas_unit'     => $activeLoan->kelas_unit,
+                'tanggal_pinjam' => $activeLoan->tanggal_pinjam ? $activeLoan->tanggal_pinjam->format('d M Y') : null,
+            ] : null,
+            'catatan'          => $asset->catatan,
         ];
 
         return Inertia::render('Public/AssetDetail', [

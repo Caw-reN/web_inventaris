@@ -1,7 +1,7 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import StatusBadge from '@/Components/StatusBadge';
-import { Tag, MapPin, Activity, AlertTriangle, Send, Info, ShieldAlert, Cpu } from 'lucide-react';
+import { Tag, MapPin, AlertTriangle, Send, Info, ShieldAlert, Cpu, Barcode, Calendar, UserCheck, Wrench, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -20,11 +20,44 @@ export default function AssetDetail({ asset }) {
         post(route('public.report', asset.uuid));
     };
 
+    // Helper untuk merender spesifikasi jika berupa object/array
+    const renderSpesifikasi = () => {
+        if (!asset.spesifikasi) return null;
+        if (typeof asset.spesifikasi === 'object' && Object.keys(asset.spesifikasi).length > 0) {
+            return (
+                <div className="bg-slate-50/90 border border-slate-200/80 rounded-xl p-4 mb-5 shadow-2xs">
+                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <Wrench size={13} className="text-indigo-500" /> Spesifikasi Teknis
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                        {Object.entries(asset.spesifikasi).map(([key, val]) => (
+                            <div key={key} className="bg-white p-2 rounded-lg border border-slate-200/60">
+                                <span className="font-semibold text-slate-500 block text-[10px] uppercase">{key}</span>
+                                <span className="font-bold text-slate-800">{String(val)}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+        if (typeof asset.spesifikasi === 'string' && asset.spesifikasi.trim() !== '') {
+            return (
+                <div className="bg-slate-50/90 border border-slate-200/80 rounded-xl p-4 mb-5 shadow-2xs">
+                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                        <Wrench size={13} className="text-indigo-500" /> Spesifikasi Teknis
+                    </p>
+                    <p className="text-xs font-medium text-slate-700 leading-relaxed">{asset.spesifikasi}</p>
+                </div>
+            );
+        }
+        return null;
+    };
+
     return (
         <GuestLayout>
             <Head title={`Informasi Aset: ${asset.nama}`} />
 
-            {/* Flash message */}
+            {/* Flash notification */}
             {flash?.error && (
                 <div className="mb-5 p-3.5 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold flex items-center gap-2 shadow-xs">
                     <AlertTriangle size={16} className="shrink-0 text-red-500" />
@@ -32,58 +65,102 @@ export default function AssetDetail({ asset }) {
                 </div>
             )}
 
-            {/* Header / Status & Title */}
+            {/* Status & Title Header */}
             <div className="text-center pb-5 mb-5 border-b border-slate-100">
                 <div className="inline-flex justify-center mb-3">
-                    <StatusBadge status={asset.status} label={asset.status_label} className="text-xs px-3 py-1 rounded-full shadow-2xs font-semibold" />
+                    <StatusBadge status={asset.status} label={asset.status_label} className="text-xs px-3.5 py-1 rounded-full shadow-2xs font-bold" />
                 </div>
                 <h2 className="text-2xl font-black text-slate-900 tracking-tight leading-snug">{asset.nama}</h2>
-                <div className="mt-2 flex items-center justify-center gap-2">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">No. Seri / UUID:</span>
-                    <span className="font-mono text-xs font-semibold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200">
-                        {asset.no_seri || asset.uuid.substring(0, 8)}
+
+                {/* Identification Badges */}
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                    <span className="inline-flex items-center gap-1 font-mono text-xs font-bold text-[hsl(var(--primary))] bg-[hsl(var(--primary)/0.08)] px-2.5 py-1 rounded-lg border border-[hsl(var(--primary)/0.2)]">
+                        <Barcode size={14} /> {asset.nomor_inventaris || 'REG-UNSET'}
+                    </span>
+                    <span className="inline-flex items-center gap-1 font-mono text-xs font-medium text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+                        SN: {asset.no_seri || '-'}
                     </span>
                 </div>
             </div>
 
-            {/* Foto Aset (Jika ada) */}
+            {/* Banner Status Peminjaman Aktif (Jika Sedang Dipinjam) */}
+            {asset.status === 'digunakan' && asset.active_loan && (
+                <div className="mb-5 bg-blue-50/90 border border-blue-200/80 rounded-xl p-3.5 flex items-start gap-3 shadow-2xs">
+                    <div className="p-2 bg-blue-500 text-white rounded-lg shrink-0 mt-0.5">
+                        <UserCheck size={16} />
+                    </div>
+                    <div className="text-xs">
+                        <p className="font-bold text-blue-900 text-xs">Sedang Dipinjam</p>
+                        <p className="font-semibold text-blue-800 mt-0.5">
+                            {asset.active_loan.peminjam} {asset.active_loan.kelas_unit ? `(${asset.active_loan.kelas_unit})` : ''}
+                        </p>
+                        <p className="text-[11px] text-blue-600 mt-0.5">
+                            Sejak: {asset.active_loan.tanggal_pinjam || '-'}
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* Foto Aset (Jika Ada) */}
             {asset.foto && (
-                <div className="mb-6 rounded-2xl overflow-hidden border border-slate-200 shadow-md max-h-56 bg-slate-100">
+                <div className="mb-5 rounded-2xl overflow-hidden border border-slate-200 shadow-md max-h-56 bg-slate-100">
                     <img src={asset.foto} alt={asset.nama} className="w-full h-56 object-cover hover:scale-105 transition-transform duration-300" />
                 </div>
             )}
 
-            {/* Informational Cards Grid */}
-            <div className="grid grid-cols-2 gap-3 mb-6">
-                <div className="bg-slate-50/80 rounded-xl p-3.5 border border-slate-200/80 shadow-2xs">
-                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                        <Tag size={13} className="text-indigo-500" /> Kategori
+            {/* Grid 4 Kartu Informasi Utama */}
+            <div className="grid grid-cols-2 gap-2.5 mb-5">
+                {/* Kategori */}
+                <div className="bg-slate-50/90 rounded-xl p-3 border border-slate-200/80 shadow-2xs flex flex-col justify-between">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-1">
+                        <Tag size={12} className="text-indigo-500 shrink-0" /> Kategori
                     </p>
-                    <p className="text-sm font-bold text-slate-800 truncate">{asset.category?.nama || '-'}</p>
+                    <p className="text-xs font-bold text-slate-800 truncate" title={asset.category?.nama}>
+                        {asset.category?.nama || '-'}
+                    </p>
                 </div>
 
-                <div className="bg-slate-50/80 rounded-xl p-3.5 border border-slate-200/80 shadow-2xs">
-                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                        <MapPin size={13} className="text-emerald-500" /> Lokasi
+                {/* Merk/Brand */}
+                <div className="bg-slate-50/90 rounded-xl p-3 border border-slate-200/80 shadow-2xs flex flex-col justify-between">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-1">
+                        <Cpu size={12} className="text-amber-500 shrink-0" /> Merk / Brand
                     </p>
-                    <p className="text-sm font-bold text-slate-800 truncate" title={asset.location?.full_path || asset.location?.nama}>
+                    <p className="text-xs font-bold text-slate-800 truncate" title={asset.merk}>
+                        {asset.merk || '-'}
+                    </p>
+                </div>
+
+                {/* Lokasi Penempatan (Full Width) */}
+                <div className="bg-slate-50/90 rounded-xl p-3 border border-slate-200/80 shadow-2xs col-span-2">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-1">
+                        <MapPin size={12} className="text-emerald-500 shrink-0" /> Lokasi Penempatan
+                    </p>
+                    <p className="text-xs font-bold text-slate-800 leading-snug">
                         {asset.location?.full_path || asset.location?.nama || 'Belum Diset'}
                     </p>
                 </div>
 
-                <div className="bg-slate-50/80 rounded-xl p-3.5 border border-slate-200/80 shadow-2xs col-span-2">
-                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mb-1">
-                        <Cpu size={13} className="text-amber-500" /> Merk / Brand
-                    </p>
-                    <p className="text-sm font-bold text-slate-800">{asset.merk || '-'}</p>
-                </div>
+                {/* Tanggal / Tahun Pembelian (Jika Ada) */}
+                {asset.tanggal_beli && (
+                    <div className="bg-slate-50/90 rounded-xl p-3 border border-slate-200/80 shadow-2xs col-span-2">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-1">
+                            <Calendar size={12} className="text-blue-500 shrink-0" /> Tanggal Registrasi / Pembelian
+                        </p>
+                        <p className="text-xs font-bold text-slate-800">
+                            {asset.tanggal_beli}
+                        </p>
+                    </div>
+                )}
             </div>
 
-            {/* Catatan Publik (Jika ada) */}
+            {/* Spesifikasi Teknis */}
+            {renderSpesifikasi()}
+
+            {/* Catatan / Keterangan Tambahan (Jika Ada) */}
             {asset.catatan && (
-                <div className="bg-amber-50 border border-amber-200/80 rounded-xl p-4 mb-6 shadow-2xs">
+                <div className="bg-amber-50/90 border border-amber-200/80 rounded-xl p-3.5 mb-5 shadow-2xs">
                     <p className="text-[10px] text-amber-700 font-bold uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                        <Info size={14} className="text-amber-600" /> Catatan / Keterangan
+                        <Info size={13} className="text-amber-600 shrink-0" /> Catatan / Keterangan
                     </p>
                     <p className="text-xs text-amber-900 leading-relaxed font-medium">{asset.catatan}</p>
                 </div>
@@ -178,6 +255,13 @@ export default function AssetDetail({ asset }) {
                         </motion.div>
                     </AnimatePresence>
                 )}
+            </div>
+
+            {/* Footer Verification Stamp */}
+            <div className="mt-6 pt-4 border-t border-slate-100 text-center">
+                <p className="text-[10px] font-semibold text-slate-400 flex items-center justify-center gap-1">
+                    <ShieldCheck size={13} className="text-emerald-500" /> Informasi Resmi Sistem Inventaris
+                </p>
             </div>
         </GuestLayout>
     );
