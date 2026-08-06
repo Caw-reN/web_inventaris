@@ -91,7 +91,7 @@ export default function Dashboard({ stats, lowStockItems, laporanTerbaru, asetTe
                                     <div className={`w-11 h-11 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shadow-2xs transition-all duration-200 group-hover:scale-110 group-hover:shadow-md ${act.color}`}>
                                         <act.icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
                                     </div>
-                                    <span className="text-[11px] sm:text-xs md:text-sm font-semibold text-slate-700 leading-snug group-hover:text-slate-900 transition-colors truncate w-full">
+                                    <span className="text-[11px] sm:text-xs md:text-sm font-semibold text-slate-700 leading-tight group-hover:text-slate-900 transition-colors text-center">
                                         {act.label}
                                     </span>
                                 </Link>
