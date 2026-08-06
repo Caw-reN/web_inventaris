@@ -395,7 +395,7 @@ export default function Index({ reports, filters }) {
                                         )}
                                     </div>
                                 </div>
-                            ))))
+                            ))
                         ) : (
                             <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400">
                                 <AlertTriangle size={32} className="mx-auto mb-2 opacity-50 text-slate-400" />
