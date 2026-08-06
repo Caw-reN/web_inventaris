@@ -45,19 +45,19 @@ export default function SelectInput({ value, onChange, options, placeholder = 'P
                                 >
                                     {({ selected }) => {
                                         const isChild = option.depth > 0;
-                                        const paddingLeft = isChild ? `${(option.depth * 0.8) + 2}rem` : '2rem';
+                                        const indent = option.depth > 0 ? (option.depth * 1) + 1.5 : 1.5;
                                         return (
                                             <div 
-                                                className="flex items-center gap-2"
-                                                style={{ paddingLeft }}
+                                                className="flex items-center gap-1.5"
+                                                style={{ paddingLeft: `${indent}rem` }}
                                             >
                                                 {isChild && (
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0" />
+                                                    <span className="text-slate-400 font-mono text-xs select-none">└</span>
                                                 )}
                                                 <span className={`block truncate ${
                                                     !isChild ? 'font-semibold text-slate-800' : 'text-sm text-slate-600'
                                                 } ${selected ? '!text-[hsl(var(--primary))] font-bold' : ''}`}>
-                                                    {option.displayLabel || option.label}
+                                                    {option.label}
                                                 </span>
                                                 {selected && (
                                                     <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-[hsl(var(--primary))]">
