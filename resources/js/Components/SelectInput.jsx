@@ -45,24 +45,25 @@ export default function SelectInput({ value, onChange, options, placeholder = 'P
                                 >
                                     {({ selected }) => {
                                         const isChild = option.depth > 0;
+                                        const paddingLeft = isChild ? `${(option.depth * 0.8) + 2}rem` : '2rem';
                                         return (
                                             <div 
-                                                className="flex items-center"
-                                                style={{ paddingLeft: isChild ? `${(option.depth * 1.2) + 2.5}rem` : '2.5rem' }}
+                                                className="flex items-center gap-2"
+                                                style={{ paddingLeft }}
                                             >
                                                 {isChild && (
-                                                    <div className="w-3 h-3 border-b-2 border-l-2 border-slate-300 rounded-bl mr-2 -mt-1 shrink-0" />
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0" />
                                                 )}
                                                 <span className={`block truncate ${
                                                     !isChild ? 'font-semibold text-slate-800' : 'text-sm text-slate-600'
-                                                } ${selected ? '!text-[hsl(var(--primary))]' : ''}`}>
-                                                    {option.label}
+                                                } ${selected ? '!text-[hsl(var(--primary))] font-bold' : ''}`}>
+                                                    {option.displayLabel || option.label}
                                                 </span>
-                                                {selected ? (
-                                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[hsl(var(--primary))]">
+                                                {selected && (
+                                                    <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-[hsl(var(--primary))]">
                                                         <Check className="h-4 w-4" aria-hidden="true" />
                                                     </span>
-                                                ) : null}
+                                                )}
                                             </div>
                                         );
                                     }}
