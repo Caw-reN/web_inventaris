@@ -36,7 +36,16 @@ if grep -q "^APP_KEY=base64" /var/www/html/.env 2>/dev/null; then
     export APP_KEY="$(grep "^APP_KEY=base64" /var/www/html/.env | head -n 1 | cut -d '=' -f 2- | tr -d '\r')"
 fi
 
-# Create storage symlink
+# Ensure required storage directories exist
+mkdir -p /var/www/html/storage/app/public \
+         /var/www/html/storage/logs \
+         /var/www/html/storage/framework/views \
+         /var/www/html/storage/framework/sessions \
+         /var/www/html/storage/framework/cache \
+         /var/www/html/bootstrap/cache
+
+# Remove stale symlink and recreate storage link freshly
+rm -rf /var/www/html/public/storage
 php artisan storage:link --force || true
 
 # Refresh optimization caches with valid environment key
