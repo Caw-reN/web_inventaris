@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     supervisor \
     git \
     curl \
+    dos2unix \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
@@ -48,7 +49,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN dos2unix /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
 
 # Set ownership and permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache

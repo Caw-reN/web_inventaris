@@ -1,21 +1,19 @@
 #!/bin/bash
-set -e
 
-# Cache configuration, routes, and views in production
-echo "Running optimization commands..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+echo "Starting container entrypoint..."
 
-# Create storage symlink if not exists
+# Generate key if not set
+if [ -z "$APP_KEY" ]; then
+    echo "Generating APP_KEY..."
+    php artisan key:generate --force || true
+fi
+
+# Create storage symlink
 php artisan storage:link --force || true
 
-# Run database migrations
-echo "Running database migrations..."
-php artisan migrate --force
-
 # Ensure proper permissions
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache || true
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache || true
 
 # Start Supervisord
 echo "Starting Supervisor..."
