@@ -22,14 +22,23 @@ if [ ! -f /var/www/html/.env ]; then
     fi
 fi
 
-# Generate key if not set
-if [ -z "$APP_KEY" ]; then
+# Generate key if not present in .env
+if ! grep -q "^APP_KEY=base64" /var/www/html/.env 2>/dev/null; then
     echo "Generating APP_KEY..."
     php artisan key:generate --force || true
 fi
 
 # Create storage symlink
 php artisan storage:link --force || true
+
+# Refresh optimization caches
+echo "Optimizing Laravel caches..."
+php artisan config:clear || true
+php artisan route:clear || true
+php artisan view:clear || true
+php artisan config:cache || true
+php artisan route:cache || true
+php artisan view:cache || true
 
 # Start Supervisord
 echo "Starting Supervisor..."
