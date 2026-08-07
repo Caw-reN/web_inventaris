@@ -13,7 +13,10 @@ mkdir -p /var/www/html/storage/logs \
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache || true
 chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache || true
 
-# Ensure .env file exists inside container
+# Wipe any stale bootstrap cache files
+rm -f /var/www/html/bootstrap/cache/*.php
+
+# Ensure .env file exists
 if [ ! -f /var/www/html/.env ]; then
     if [ -f /var/www/html/.env.example ]; then
         cp /var/www/html/.env.example /var/www/html/.env
@@ -22,19 +25,21 @@ if [ ! -f /var/www/html/.env ]; then
     fi
 fi
 
-# Clear config cache first so Artisan can read .env freshly
-php artisan config:clear || true
-
-# Generate key if not present in .env
+# Generate APP_KEY if not present in .env
 if ! grep -q "^APP_KEY=base64" /var/www/html/.env 2>/dev/null; then
     echo "Generating APP_KEY..."
     php artisan key:generate --force || true
 fi
 
+# Export valid APP_KEY directly into environment
+if grep -q "^APP_KEY=base64" /var/www/html/.env 2>/dev/null; then
+    export APP_KEY="$(grep "^APP_KEY=base64" /var/www/html/.env | head -n 1 | cut -d '=' -f 2- | tr -d '\r')"
+fi
+
 # Create storage symlink
 php artisan storage:link --force || true
 
-# Refresh optimization caches
+# Refresh optimization caches with valid environment key
 echo "Optimizing Laravel caches..."
 php artisan route:clear || true
 php artisan view:clear || true
