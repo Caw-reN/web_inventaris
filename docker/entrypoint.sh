@@ -22,6 +22,9 @@ if [ ! -f /var/www/html/.env ]; then
     fi
 fi
 
+# Clear config cache first so Artisan can read .env freshly
+php artisan config:clear || true
+
 # Generate key if not present in .env
 if ! grep -q "^APP_KEY=base64" /var/www/html/.env 2>/dev/null; then
     echo "Generating APP_KEY..."
@@ -33,7 +36,6 @@ php artisan storage:link --force || true
 
 # Refresh optimization caches
 echo "Optimizing Laravel caches..."
-php artisan config:clear || true
 php artisan route:clear || true
 php artisan view:clear || true
 php artisan config:cache || true
