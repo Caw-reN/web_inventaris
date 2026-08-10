@@ -37,10 +37,10 @@ class ScannerController extends Controller
             ], 404);
         }
 
-        // Redirect URL yang akan dieksekusi frontend
+        // Redirect URL yang akan dieksekusi frontend (menggunakan relative URL untuk menghindari isu proxy/port)
         return response()->json([
             'success'      => true,
-            'redirect_url' => route('assets.show', $asset->id)
+            'redirect_url' => route('assets.show', $asset->id, false)
         ]);
     }
 }

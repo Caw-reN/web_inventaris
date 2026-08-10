@@ -88,7 +88,7 @@ class PublicController extends Controller
 
         $asset->update(['status' => 'digunakan']);
 
-        return redirect()->route('public.success', $uuid)
+        return redirect(route('public.success', $uuid, false))
             ->with('success', 'Pengajuan peminjaman aset berhasil dicatat!');
     }
 
@@ -113,7 +113,7 @@ class PublicController extends Controller
             'ip_pelapor' => $request->ip(),
         ]);
 
-        return redirect()->route('public.success', $uuid)
+        return redirect(route('public.success', $uuid, false))
             ->with('success', 'Laporan Anda berhasil dikirim. Terima kasih!');
     }
 
