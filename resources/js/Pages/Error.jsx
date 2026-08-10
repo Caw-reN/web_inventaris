@@ -1,43 +1,43 @@
 import { Link } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
-import { ArrowDown } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 export default function Error({ status }) {
     const title = status === 404 ? '404 - Halaman Tidak Ditemukan' : 'Terjadi Kesalahan';
     
     return (
-        <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-6 font-sans text-white relative overflow-hidden">
+        <div className="min-h-screen bg-[#F5F6F8] flex flex-col relative overflow-hidden font-sans">
             <Head title={title} />
             
-            {/* Background elements to match project UI but keep it dark */}
-            <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-[hsl(var(--primary))]/10 blur-[120px] rounded-full mix-blend-screen pointer-events-none"></div>
-            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-[hsl(var(--primary))]/10 blur-[120px] rounded-full mix-blend-screen pointer-events-none"></div>
-
-            <div className="max-w-5xl w-full z-10 flex flex-col items-center md:items-start">
-                <div className="flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-12">
-                    <h1 className="text-[8rem] md:text-[14rem] font-medium leading-none tracking-tight text-white m-0 p-0">404</h1>
-                    <div className="text-lg md:text-3xl font-light tracking-widest uppercase text-slate-300 mb-4 md:mb-16 text-center md:text-left">
-                        (Oh tidak! Halaman ini<br/>tidak ditemukan)
-                    </div>
-                </div>
-                
-                <div className="flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-12 -mt-4 md:-mt-8">
-                    <h2 className="text-[6rem] md:text-[12rem] font-medium leading-none tracking-tight text-white m-0 p-0">MAAF</h2>
-                    <div className="flex gap-4 md:gap-8 mt-2 md:mt-0 mb-4 md:mb-12">
-                        <ArrowDown className="w-16 h-16 md:w-32 md:h-32 text-[hsl(var(--primary))] opacity-80" strokeWidth={1} />
-                        <ArrowDown className="w-16 h-16 md:w-32 md:h-32 text-[hsl(var(--primary))] opacity-80" strokeWidth={1} />
-                        <ArrowDown className="w-16 h-16 md:w-32 md:h-32 text-[hsl(var(--primary))] opacity-80" strokeWidth={1} />
-                    </div>
-                </div>
-
-                <div className="mt-16 md:mt-24 w-full flex justify-center">
+            {/* Content Container */}
+            <div className="flex-1 flex flex-col justify-center px-8 md:px-24 lg:px-40 z-10">
+                <div className="max-w-3xl">
+                    <p className="text-sm md:text-base font-semibold text-slate-500 mb-6 tracking-wider">
+                        [ Error ]
+                    </p>
+                    
+                    <h1 className="text-5xl md:text-[5rem] lg:text-[6rem] font-medium leading-[1.1] tracking-tight text-[#222222] mb-1">
+                        Mohon Maaf.
+                    </h1>
+                    <h2 className="text-5xl md:text-[5rem] lg:text-[6rem] font-medium leading-[1.1] tracking-tight text-[#222222] mb-12">
+                        Halaman Kosong
+                    </h2>
+                    
                     <Link 
                         href="/" 
-                        className="inline-flex items-center justify-center px-10 py-3 rounded-full bg-white text-slate-900 font-medium text-lg md:text-xl tracking-wide hover:bg-[hsl(var(--primary))] hover:text-white transition-all duration-300 hover:scale-105 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_hsl(var(--primary))]"
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-[#2A2A2A] text-white text-sm font-medium hover:bg-[hsl(var(--primary))] transition-all duration-300 rounded-sm shadow-lg hover:shadow-[hsl(var(--primary))] hover:-translate-y-1"
                     >
-                        KEMBALI KE BERANDA
+                        <ArrowUpRight size={18} strokeWidth={2} />
+                        Kembali ke Beranda
                     </Link>
                 </div>
+            </div>
+
+            {/* 404 Watermark in bottom right */}
+            <div className="absolute -bottom-8 md:-bottom-16 -right-4 md:-right-8 select-none pointer-events-none">
+                <span className="text-[12rem] md:text-[20rem] lg:text-[30rem] font-bold leading-none text-[#2A2A2A] tracking-tighter">
+                    404
+                </span>
             </div>
         </div>
     );
