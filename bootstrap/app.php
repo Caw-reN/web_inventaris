@@ -26,6 +26,15 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->respond(function (\Symfony\Component\HttpFoundation\Response $response, \Throwable $exception, Request $request) {
+            if ($response->getStatusCode() === 404) {
+                return \Inertia\Inertia::render('Error', ['status' => 404])
+                    ->toResponse($request)
+                    ->setStatusCode(404);
+            }
+            return $response;
+        });
+
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );
