@@ -69,8 +69,8 @@ export default function Index() {
             const data = await response.json();
 
             if (data.success && data.redirect_url) {
-                // Arahkan teknisi ke halaman detail aset
-                window.location.href = data.redirect_url;
+                // Arahkan teknisi ke halaman detail aset menggunakan Inertia router
+                router.visit(data.redirect_url);
             } else {
                 throw new Error(data.message || "Aset tidak ditemukan.");
             }
