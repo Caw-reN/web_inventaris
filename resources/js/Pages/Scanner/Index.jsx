@@ -47,17 +47,14 @@ export default function Index() {
         setScanResult(decodedText);
 
         try {
-            // Ekstrak UUID dari URL (asumsi URL format: http://domain/aset/{uuid})
-            // Kita pisahkan berdasarkan '/' dan ambil bagian terakhir
-            const urlParts = decodedText.split('/');
-            const uuid = urlParts[urlParts.length - 1];
-
-            // Validasi format UUID sederhana
-            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            // Ekstrak UUID dari string hasil scan (URL atau teks biasa)
+            const uuidMatch = decodedText.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
             
-            if (!uuidRegex.test(uuid)) {
-                throw new Error("Format QR Code tidak dikenali sebagai URL aset sistem ini.");
+            if (!uuidMatch) {
+                throw new Error("Format QR Code tidak dikenali. Pastikan ini adalah QR Code aset sistem.");
             }
+            
+            const uuid = uuidMatch[0];
 
             // Kirim ke backend untuk diproses
             const response = await fetch(route('scanner.process'), {
