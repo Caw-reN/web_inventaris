@@ -46,7 +46,7 @@ export default function Show({ report }) {
                                     <p className="text-xs font-mono text-slate-500">{report.asset?.nomor_inventaris}</p>
                                 </div>
                                 {report.asset && (
-                                    <Link href={route('assets.show', report.asset.id)} className="px-3 py-1.5 text-xs font-semibold bg-white border border-slate-200 rounded-lg hover:bg-slate-50">
+                                    <Link href={route('assets.show', report.asset.uuid)} className="px-3 py-1.5 text-xs font-semibold bg-white border border-slate-200 rounded-lg hover:bg-slate-50">
                                         Lihat Detail Aset
                                     </Link>
                                 )}

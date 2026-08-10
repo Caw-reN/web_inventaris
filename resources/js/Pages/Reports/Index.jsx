@@ -235,7 +235,7 @@ export default function Index({ reports, filters }) {
                                                 <td className="py-3.5 px-4 font-medium">
                                                     {report.asset ? (
                                                         <Link 
-                                                            href={route('assets.show', report.asset.id)}
+                                                            href={route('assets.show', report.asset.uuid)}
                                                             className="group flex flex-col hover:text-[hsl(var(--primary))]"
                                                         >
                                                             <span className="font-bold text-slate-800 group-hover:underline flex items-center gap-1">
@@ -349,7 +349,7 @@ export default function Index({ reports, filters }) {
                                             <div className="min-w-0">
                                                 <p className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Aset Terkait</p>
                                                 {report.asset ? (
-                                                    <Link href={route('assets.show', report.asset.id)} className="font-bold text-xs text-slate-800 hover:text-[hsl(var(--primary))] flex items-center gap-1 mt-0.5 truncate">
+                                                    <Link href={route('assets.show', report.asset.uuid)} className="font-bold text-xs text-slate-800 hover:text-[hsl(var(--primary))] flex items-center gap-1 mt-0.5 truncate">
                                                         {report.asset.nama} <ArrowUpRight size={12} className="text-slate-400" />
                                                     </Link>
                                                 ) : (

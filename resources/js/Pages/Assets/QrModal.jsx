@@ -5,7 +5,7 @@ import { X, Download, Printer } from 'lucide-react';
 export default function QrModal({ isOpen, onClose, asset }) {
     if (!asset) return null;
 
-    const qrUrl = route('assets.qr', asset.id);
+    const qrUrl = route('assets.qr', asset.uuid);
 
     const handlePrint = () => {
         const printWindow = window.open(qrUrl, '_blank');

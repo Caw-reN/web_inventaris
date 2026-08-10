@@ -25,7 +25,7 @@ export default function Edit({ asset, categories, locations }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route('assets.update', asset.id));
+        post(route('assets.update', asset.uuid));
     };
 
     return (
@@ -35,7 +35,7 @@ export default function Edit({ asset, categories, locations }) {
             <PageTransition>
                 <div className="w-full pb-10">
                     <div className="mb-4 flex items-center justify-between">
-                        <Link href={route('assets.show', asset.id)} className="text-slate-500 hover:text-slate-700 inline-flex items-center gap-1 text-sm font-medium">
+                        <Link href={route('assets.show', asset.uuid)} className="text-slate-500 hover:text-slate-700 inline-flex items-center gap-1 text-sm font-medium">
                             <ArrowLeft size={16} /> Kembali ke Detail
                         </Link>
                     </div>
@@ -140,7 +140,7 @@ export default function Edit({ asset, categories, locations }) {
                         </div>
 
                         <div className="bg-slate-50 p-4 px-8 flex justify-end gap-3 border-t border-slate-200">
-                            <Link href={route('assets.show', asset.id)} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">
+                            <Link href={route('assets.show', asset.uuid)} className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100">
                                 Batal
                             </Link>
                             <button type="submit" disabled={processing} className="px-4 py-2 bg-[hsl(var(--primary))] text-white rounded-lg text-sm font-medium hover:opacity-90 flex items-center gap-2 disabled:opacity-50">

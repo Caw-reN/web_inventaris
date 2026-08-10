@@ -97,6 +97,14 @@ class Asset extends Model
     }
 
     /**
+     * Set route key to UUID for public and dashboard URLs.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
+
+    /**
      * Label status dalam Bahasa Indonesia.
      */
     public function getStatusLabelAttribute(): string

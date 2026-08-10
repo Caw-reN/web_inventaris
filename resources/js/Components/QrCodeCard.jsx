@@ -7,7 +7,7 @@ export default function QrCodeCard({ asset }) {
 
     useEffect(() => {
         // Fetch SVG dari endpoint QrCodeController
-        fetch(route('assets.qr', asset.id))
+        fetch(route('assets.qr', asset.uuid))
             .then(res => res.text())
             .then(svg => {
                 setSvgData(svg);

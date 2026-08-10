@@ -40,7 +40,7 @@ class ScannerController extends Controller
         // Redirect URL yang akan dieksekusi frontend (menggunakan relative URL untuk menghindari isu proxy/port)
         return response()->json([
             'success'      => true,
-            'redirect_url' => route('assets.show', $asset->id, false)
+            'redirect_url' => route('assets.show', $asset->uuid, false)
         ]);
     }
 }

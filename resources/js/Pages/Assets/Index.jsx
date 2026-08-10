@@ -40,7 +40,7 @@ export default function Index({ assets, categories, locations, filters }) {
 
     const handleDelete = () => {
         if (!deleteModal.asset) return;
-        router.delete(route('assets.destroy', deleteModal.asset.id), {
+        router.delete(route('assets.destroy', deleteModal.asset.uuid), {
             preserveScroll: true,
             onSuccess: () => setDeleteModal({ isOpen: false, asset: null })
         });
@@ -126,10 +126,10 @@ export default function Index({ assets, categories, locations, filters }) {
                     <button onClick={() => setQrModal({ isOpen: true, asset: row })} className="p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" title="Lihat QR Code">
                         <QrCode size={16} />
                     </button>
-                    <Link href={route('assets.show', row.id)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Detail">
-                        <Eye size={16} />
+                    <Link href={route('assets.show', row.uuid)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Detail">
+                        <FileText size={16} />
                     </Link>
-                    <Link href={route('assets.edit', row.id)} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
+                    <Link href={route('assets.edit', row.uuid)} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
                         <Edit size={16} />
                     </Link>
                     <button onClick={() => setDeleteModal({ isOpen: true, asset: row })} className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer" title="Hapus">
@@ -466,10 +466,10 @@ export default function Index({ assets, categories, locations, filters }) {
                                                                         
                                                                         {/* Card Actions */}
                                                                         <div className="p-2.5 bg-slate-50/80 flex items-center gap-2">
-                                                                            <Link href={route('assets.show', item.id)} className="flex-1 flex justify-center items-center gap-1 py-1.5 text-blue-600 bg-white border border-blue-200/80 hover:bg-blue-50 rounded-lg text-xs font-semibold transition-colors shadow-2xs">
-                                                                                <Eye size={14} /> Detail
+                                                                            <Link href={route('assets.show', item.uuid)} className="flex-1 flex justify-center items-center gap-1 py-1.5 text-blue-600 bg-white border border-blue-200/80 hover:bg-blue-50 rounded-lg text-xs font-semibold transition-colors shadow-2xs">
+                                                                                <FileText size={14} /> Detail
                                                                             </Link>
-                                                                            <Link href={route('assets.edit', item.id)} className="flex-1 flex justify-center items-center gap-1 py-1.5 text-amber-600 bg-white border border-amber-200/80 hover:bg-amber-50 rounded-lg text-xs font-semibold transition-colors shadow-2xs">
+                                                                            <Link href={route('assets.edit', item.uuid)} className="flex-1 flex justify-center items-center gap-1 py-1.5 text-amber-600 bg-white border border-amber-200/80 hover:bg-amber-50 rounded-lg text-xs font-semibold transition-colors shadow-2xs">
                                                                                 <Edit size={14} /> Edit
                                                                             </Link>
                                                                             <button onClick={() => setDeleteModal({ isOpen: true, asset: item })} className="p-1.5 text-red-600 bg-white border border-red-200/80 hover:bg-red-50 rounded-lg transition-colors shrink-0 shadow-2xs cursor-pointer">

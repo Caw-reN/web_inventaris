@@ -51,7 +51,7 @@ export default function Show({ asset, auditLog, borrowers = [] }) {
                                 </button>
                             )}
                             <Link 
-                                href={route('assets.edit', asset.id)} 
+                                href={route('assets.edit', asset.uuid)} 
                                 className="flex-1 sm:flex-initial bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors shadow-xs whitespace-nowrap"
                             >
                                 <Edit size={16} className="text-slate-500" /> Edit Aset

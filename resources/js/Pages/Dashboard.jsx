@@ -162,7 +162,7 @@ export default function Dashboard({ stats, lowStockItems, laporanTerbaru, asetTe
                                             asetTerbaru.map(aset => (
                                                 <tr key={aset.id} className="hover:bg-slate-50">
                                                     <td className="px-4 py-3">
-                                                        <Link href={route('assets.show', aset.id)} className="font-medium text-[hsl(var(--primary))] hover:underline">
+                                                        <Link href={route('assets.show', aset.uuid)} className="font-medium text-[hsl(var(--primary))] hover:underline">
                                                             {aset.nama}
                                                         </Link>
                                                     </td>
@@ -183,7 +183,7 @@ export default function Dashboard({ stats, lowStockItems, laporanTerbaru, asetTe
                                     <div className="p-4 text-center text-slate-500 text-xs">Belum ada aset.</div>
                                 ) : (
                                     asetTerbaru.slice(0, 4).map(aset => (
-                                        <Link key={aset.id} href={route('assets.show', aset.id)} className="py-2.5 px-3 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                                        <Link key={aset.id} href={route('assets.show', aset.uuid)} className="py-2.5 px-3 flex items-center justify-between hover:bg-slate-50 transition-colors">
                                             <div className="min-w-0 flex-1 pr-2">
                                                 <h4 className="font-semibold text-slate-800 text-xs truncate">{aset.nama}</h4>
                                                 <span className="text-[10px] text-slate-400 block truncate">{aset.category?.nama || '-'}</span>
