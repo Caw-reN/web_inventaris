@@ -127,7 +127,7 @@ export default function Index({ assets, categories, locations, filters }) {
                         <QrCode size={16} />
                     </button>
                     <Link href={route('assets.show', row.uuid)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Detail">
-                        <FileText size={16} />
+                        <Eye size={16} />
                     </Link>
                     <Link href={route('assets.edit', row.uuid)} className="p-1.5 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit">
                         <Edit size={16} />
@@ -467,7 +467,7 @@ export default function Index({ assets, categories, locations, filters }) {
                                                                         {/* Card Actions */}
                                                                         <div className="p-2.5 bg-slate-50/80 flex items-center gap-2">
                                                                             <Link href={route('assets.show', item.uuid)} className="flex-1 flex justify-center items-center gap-1 py-1.5 text-blue-600 bg-white border border-blue-200/80 hover:bg-blue-50 rounded-lg text-xs font-semibold transition-colors shadow-2xs">
-                                                                                <FileText size={14} /> Detail
+                                                                                <Eye size={14} /> Detail
                                                                             </Link>
                                                                             <Link href={route('assets.edit', item.uuid)} className="flex-1 flex justify-center items-center gap-1 py-1.5 text-amber-600 bg-white border border-amber-200/80 hover:bg-amber-50 rounded-lg text-xs font-semibold transition-colors shadow-2xs">
                                                                                 <Edit size={14} /> Edit
